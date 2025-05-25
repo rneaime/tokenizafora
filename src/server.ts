@@ -59,6 +59,35 @@ app.post('/veiculos', autenticar, (req: Request, res: Response) => {
   res.json(veiculo);
 });
 
+// Rotas para autorização
+app.post('/login', (req: Request, res: Response) => {
+  const { username, password } = req.body;
+  // Lógica para autenticar o usuário aqui
+  const usuario = { username, password };
+  const token = 'token_de_autorizacao';
+  res.json({ autorizado: true, token, usuario });
+});
+
+app.get('/verificar-autorizacao', (req: Request, res: Response) => {
+  const token = req.headers.authorization;
+  if (token) {
+    // Lógica para verificar autorização aqui
+    res.json({ autorizado: true, usuario: { username: 'usuário', password: 'senha' } });
+  } else {
+    res.json({ autorizado: false, usuario: null });
+  }
+});
+
+app.post('/logout', (req: Request, res: Response) => {
+  const token = req.headers.authorization;
+  if (token) {
+    // Lógica para desautenticar o usuário aqui
+    res.json({ autorizado: false, usuario: null });
+  } else {
+    res.json({ autorizado: false, usuario: null });
+  }
+});
+
 app.listen(3001, () => {
   console.log('Servidor rodando na porta 3001');
 });
