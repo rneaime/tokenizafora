@@ -1,6 +1,9 @@
 import express, { Request, Response } from 'express';
-import { json } from 'body-parser';
-import jwt from 'jsonwebtoken';
+import bodyParser from 'body-parser';
+import jsonwebtoken from 'jsonwebtoken';
+
+const { json } = bodyParser;
+const jwt = jsonwebtoken;
 
 const app = express();
 app.use(json());
