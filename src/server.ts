@@ -1,11 +1,11 @@
 import express, { Request, Response } from 'express';
-import { json } from 'body-parser';
+import bodyParser from 'body-parser';
 import jwt from 'jsonwebtoken';
 import path from 'path';
 import cors from 'cors';
 
 const app = express();
-app.use(json());
+app.use(bodyParser.json());
 app.use(cors());
 app.use(express.static('public'));
 
