@@ -1,1 +1,25 @@
-{"name": "tokenizafora", "version": "1.0.0", "description": "", "main": "src/main.tsx", "scripts": {"start": "vite", "build": "vite build", "dev": "vite"}, "keywords": [], "author": "", "license": "MIT", "dependencies": {"react": "^18.2.0", "react-dom": "^18.2.0", "react-router-dom": "^6.4.3"}, "devDependencies": {"@vitejs/plugin-react": "^4.0.0", "@types/react": "^18.0.26", "@types/react-dom": "^18.0.10", "vite": "^4.5.14"}}
+{
+  "name": "tokenizafora",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/main.tsx",
+  "scripts": {
+    "start": "vite",
+    "build": "vite build",
+    "dev": "vite"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.4.3"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.0.0",
+    "@types/react": "^18.0.26",
+    "@types/react-dom": "^18.0.10",
+    "vite": "^4.5.14"
+  }
+}
