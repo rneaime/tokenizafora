@@ -12,8 +12,7 @@ app.use(express.static('dist'));
 
 // Desativa o cache
 app.use((req, res, next) => {
-  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-  res.setHeader('Expires', '-1');
+  res.setHeader('Cache-Control', 'max-age=3600');
   next();
 });
 
@@ -84,17 +83,4 @@ app.post('/login', (req: Request, res: Response) => {
   const usuario = { username, password };
   const token = jwt.sign(usuario, 'chave_secreta', { expiresIn: '1h' });
   res.json({ autorizado: true, token, usuario });
-});
-
-app.post('/logout', (req: Request, res: Response) => {
-  // Lógica para desautenticar o usuário aqui
-  res.json({ autorizado: false });
-});
-
-app.use((req, res, next) => {
-  res.status(404).json({ mensagem: 'Rota não encontrada' });
-});
-
-app.listen(3001, () => {
-  console.log('Servidor está rodando na porta 3001');
 });
