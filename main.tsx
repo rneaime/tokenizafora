@@ -1,8 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './App';
-
-console.log('Main.tsx carregado');
+import App from './components/App';
 
 ReactDOM.render(
   <React.StrictMode>
