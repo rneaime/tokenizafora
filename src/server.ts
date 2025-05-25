@@ -5,6 +5,7 @@ import path from 'path';
 import cors from 'cors';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import { createServer } from 'vite';
 
 // Create __dirname equivalent for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -112,6 +113,20 @@ app.get('*', (req: Request, res: Response) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
+// Initialize Vite development server
+const vite = await createServer({
+  root: path.join(__dirname, '..'),
+  server: { 
+    port: 3001,
+    middlewareMode: true
+  }
+});
+
+// Use Vite's middleware in development mode
+app.use(vite.middlewares);
+
+// Start Express server only if Vite is not handling it
+// For production mode
 app.listen(3001, () => {
   console.log('Servidor rodando na porta 3001');
 });
