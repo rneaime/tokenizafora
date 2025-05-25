@@ -1,27 +1,39 @@
 import React, { useState } from 'react';
 
-interface TokenizerProps {
-  renavam: string;
-  placa: string;
-  proprietario: string;
-  valorDoVeiculo: number;
-}
-
-const Tokenizer: React.FC<TokenizerProps> = ({ renavam, placa, proprietario, valorDoVeiculo }) => {
-  const [token, setToken] = useState('');
+function Tokenizer() {
+  const [renavam, setRenvam] = useState('');
+  const [placa, setPlaca] = useState('');
+  const [proprietario, setProprietario] = useState('');
+  const [valorDoVeiculo, setValorDoVeiculo] = useState('');
 
   const handleTokenizar = async () => {
     // Lógica de tokenização aqui
-    const tokenGerado = await tokenizarVeiculo(renavam, placa, proprietario, valorDoVeiculo);
-    setToken(tokenGerado);
   };
 
   return (
     <div>
-      <button onClick={handleTokenizar}>Tokenizar</button>
-      <p>Token: {token}</p>
+      <h2>Tokenizar Veículo</h2>
+      <form>
+        <label>
+          RENAVAM:
+          <input type="text" value={renavam} onChange={(e) => setRenvam(e.target.value)} />
+        </label>
+        <label>
+          Placa:
+          <input type="text" value={placa} onChange={(e) => setPlaca(e.target.value)} />
+        </label>
+        <label>
+          Proprietário:
+          <input type="text" value={proprietario} onChange={(e) => setProprietario(e.target.value)} />
+        </label>
+        <label>
+          Valor do Veículo:
+          <input type="number" value={valorDoVeiculo} onChange={(e) => setValorDoVeiculo(e.target.value)} />
+        </label>
+        <button onClick={handleTokenizar}>Tokenizar</button>
+      </form>
     </div>
   );
-};
+}
 
 export default Tokenizer;
