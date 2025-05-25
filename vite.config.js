@@ -10,6 +10,7 @@ export default defineConfig({
     extensions: ['.js', '.ts', '.tsx']
   },
   server: {
+    port: 3001,
     proxy: {
       '/src': 'http://localhost:3001/src'
     }

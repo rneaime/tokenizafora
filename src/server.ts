@@ -28,6 +28,18 @@ app.use((req, res, next) => {
   next();
 });
 
+// Initialize Vite development server
+const vite = await createServer({
+  root: path.join(__dirname, '..'),
+  server: { 
+    port: 3001,
+    middlewareMode: true
+  }
+});
+
+// Use Vite's middleware in development mode
+app.use(vite.middlewares);
+
 // Middleware de autenticação
 const autenticar = (req: Request, res: Response, next: any) => {
   const token = req.headers.authorization;
@@ -111,6 +123,12 @@ app.get('/verificar-autorizacao', (req: Request, res: Response) => {
     res.status(401).json({ mensagem: 'Acesso não autorizado' });
   }
 });
+
+app.post('/logout', (req: Request, res: Response) => {
+  // Lógica para desautenticar o usuário aqui
+  res.json({ autorizado: false });
+});
+
 // Root route
 app.get('/', (req: Request, res: Response) => {
   res.send('Bem-vindo ao servidor!');
@@ -121,24 +139,17 @@ app.get('/main', (req: Request, res: Response) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
-// Catch-all route must be last
+// 404 middleware - capture API routes that don't match
+app.use('/api', (req, res, next) => {
+  res.status(404).json({ mensagem: 'Rota não encontrada' });
+});
+
+// Catch-all route must be last - after 404 middleware
 app.get('*', (req: Request, res: Response) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
-// Initialize Vite development server
-const vite = await createServer({
-  root: path.join(__dirname, '..'),
-  server: { 
-    port: 3001,
-    middlewareMode: true
-  }
-});
-
-// Use Vite's middleware in development mode
-app.use(vite.middlewares);
-
 // Start Express server
 app.listen(3001, () => {
-  console.log('Servidor iniciado na porta 3001');
+  console.log('Servidor está rodando na porta 3001');
 });
