@@ -7,4 +7,7 @@ export default defineConfig({
     outDir: 'build',
   },
   base: '/',
+  resolve: {
+    extensions: ['.js', '.ts', '.jsx', '.tsx']
+  }
 });
