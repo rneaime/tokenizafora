@@ -111,3 +111,7 @@ app.get('/', (req: Request, res: Response) => {
 app.get('*', (req: Request, res: Response) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
 });
+
+app.listen(3001, () => {
+  console.log('Servidor rodando na porta 3001');
+});
