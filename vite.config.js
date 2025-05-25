@@ -12,7 +12,7 @@ export default defineConfig({
   server: {
     port: 3001,
     proxy: {
-      '/src': 'http://localhost:3001/src'
+      '/dist': 'http://localhost:3001/dist'
     }
   }
 });
