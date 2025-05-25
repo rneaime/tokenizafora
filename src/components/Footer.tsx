@@ -1,9 +1,10 @@
 import React from 'react';
+import Button from './Button';
 
 function Footer() {
   return (
     <div>
-      <p>&copy; 2023 Tokenizafora</p>
+      <Button />
     </div>
   );
 }
