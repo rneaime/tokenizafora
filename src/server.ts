@@ -1,19 +1,28 @@
 import express, { Request, Response } from 'express';
-import { json } from 'body-parser';
-import jwt from 'jsonwebtoken';
+import bodyParser from 'body-parser';
+import jsonwebtoken from 'jsonwebtoken';
 import path from 'path';
 import cors from 'cors';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+// Create __dirname equivalent for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const app = express();
-app.use(json());
+app.use(bodyParser.json());
 app.use(cors());
-app.use(express.static('public'));
+
+// Define public directory path properly for ES modules
+const publicPath = path.join(__dirname, '../public');
+app.use(express.static(publicPath));
 
 // Middleware de autenticação
 const autenticar = (req: Request, res: Response, next: any) => {
   const token = req.headers.authorization;
   if (token) {
-    jwt.verify(token, 'chave_secreta', (err, decoded) => {
+    jsonwebtoken.verify(token, 'chave_secreta', (err, decoded) => {
       if (err) {
         res.status(401).json({ mensagem: 'Acesso não autorizado' });
       } else {
@@ -74,14 +83,14 @@ app.post('/login', (req: Request, res: Response) => {
   const { username, password } = req.body;
   // Lógica para autenticar o usuário aqui
   const usuario = { username, password };
-  const token = jwt.sign(usuario, 'chave_secreta', { expiresIn: '1h' });
+  const token = jsonwebtoken.sign(usuario, 'chave_secreta', { expiresIn: '1h' });
   res.json({ autorizado: true, token, usuario });
 });
 
 app.get('/verificar-autorizacao', (req: Request, res: Response) => {
   const token = req.headers.authorization;
   if (token) {
-    jwt.verify(token, 'chave_secreta', (err, decoded) => {
+    jsonwebtoken.verify(token, 'chave_secreta', (err, decoded) => {
       if (err) {
         res.status(401).json({ mensagem: 'Acesso não autorizado' });
       } else {
@@ -93,6 +102,12 @@ app.get('/verificar-autorizacao', (req: Request, res: Response) => {
   }
 });
 
+// Root route
+app.get('/', (req: Request, res: Response) => {
+  res.send('Bem-vindo ao servidor!');
+});
+
+// Catch-all route must be last
 app.get('*', (req: Request, res: Response) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
 });
