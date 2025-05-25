@@ -8,5 +8,10 @@ export default defineConfig({
   },
   resolve: {
     extensions: ['.js', '.ts', '.tsx']
+  },
+  server: {
+    proxy: {
+      '/src': 'http://localhost:3001/src'
+    }
   }
 });
