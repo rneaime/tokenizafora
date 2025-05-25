@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
+  const { login, logout } = useAuth();
 
   const handleLogin = async () => {
     // Lógica para autenticar o usuário aqui
@@ -23,6 +25,11 @@ function Login() {
     }
   };
 
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
+  };
+
   return (
     <div>
       <h2>Login</h2>
@@ -36,6 +43,7 @@ function Login() {
           <input type='password' value={password} onChange={(e) => setPassword(e.target.value)} />
         </label>
         <button onClick={handleLogin}>Login</button>
+        <button onClick={handleLogout}>Logout</button>
       </form>
     </div>
   );
