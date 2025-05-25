@@ -6,7 +6,6 @@ export default defineConfig({
   server: {
     port: 3001,
     headers: {
-      'Cache-Control': 'no-store',
       'Cache-Control': 'no-cache'
     },
     base: './public',
@@ -20,5 +19,8 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist'
+  },
+  resolve: {
+    extensions: ['.js', '.ts', '.tsx']
   }
 });
