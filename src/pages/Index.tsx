@@ -1,9 +1,10 @@
 import React from 'react';
+import Card from '../components/Card';
 
 function Index() {
   return (
     <div>
-      <h1>Bem-vindo à Tokenizafora!</h1>
+      <Card />
     </div>
   );
 }
