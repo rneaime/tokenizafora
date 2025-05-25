@@ -2,16 +2,39 @@ import React, { useState, useEffect } from 'react';
 
 function Veiculo() {
   const [veiculos, setVeiculos] = useState([]);
+  const [renavam, setRenvam] = useState('');
+  const [placa, setPlaca] = useState('');
+  const [proprietario, setProprietario] = useState('');
+  const [valorDoVeiculo, setValorDoVeiculo] = useState('');
 
   useEffect(() => {
-    // Lógica de carregar veículos aqui
     const carregarVeiculos = async () => {
-      const resposta = await fetch('https://api.tokenizafora.com/veiculos');
+      const resposta = await fetch('http://localhost:3001/veiculos');
       const dados = await resposta.json();
       setVeiculos(dados);
     };
     carregarVeiculos();
   }, []);
+
+  const handleCriarVeiculo = async () => {
+    const criarVeiculo = async () => {
+      const resposta = await fetch('http://localhost:3001/veiculos', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          renavam,
+          placa,
+          proprietario,
+          valorDoVeiculo
+        })
+      });
+      const dados = await resposta.json();
+      console.log(dados);
+    };
+    criarVeiculo();
+  };
 
   return (
     <div>
@@ -36,6 +59,25 @@ function Veiculo() {
           ))}
         </tbody>
       </table>
+      <form>
+        <label>
+          RENAVAM:
+          <input type='text' value={renavam} onChange={(e) => setRenvam(e.target.value)} />
+        </label>
+        <label>
+          Placa:
+          <input type='text' value={placa} onChange={(e) => setPlaca(e.target.value)} />
+        </label>
+        <label>
+          Proprietário:
+          <input type='text' value={proprietario} onChange={(e) => setProprietario(e.target.value)} />
+        </label>
+        <label>
+          Valor do Veículo:
+          <input type='number' value={valorDoVeiculo} onChange={(e) => setValorDoVeiculo(e.target.value)} />
+        </label>
+        <button onClick={handleCriarVeiculo}>Criar Veículo</button>
+      </form>
     </div>
   );
 }
