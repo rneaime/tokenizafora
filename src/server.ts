@@ -102,10 +102,14 @@ app.get('/verificar-autorizacao', (req: Request, res: Response) => {
     res.status(401).json({ mensagem: 'Acesso não autorizado' });
   }
 });
-
 // Root route
 app.get('/', (req: Request, res: Response) => {
   res.send('Bem-vindo ao servidor!');
+});
+
+// Main route
+app.get('/main', (req: Request, res: Response) => {
+  res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
 // Catch-all route must be last
