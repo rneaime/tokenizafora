@@ -89,14 +89,8 @@ app.get('/verificar-autorizacao', (req: Request, res: Response) => {
   }
 });
 
-app.post('/logout', (req: Request, res: Response) => {
-  const token = req.headers.authorization;
-  if (token) {
-    // Lógica para desautenticar o usuário aqui
-    res.json({ autorizado: false, usuario: null });
-  } else {
-    res.json({ autorizado: false, usuario: null });
-  }
+app.get('/', (req: Request, res: Response) => {
+  res.send('Bem-vindo ao servidor!');
 });
 
 app.listen(3001, () => {
