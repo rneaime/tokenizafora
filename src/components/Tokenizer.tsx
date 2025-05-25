@@ -7,9 +7,8 @@ function Tokenizer() {
   const [valorDoVeiculo, setValorDoVeiculo] = useState('');
 
   const handleTokenizar = async () => {
-    // Lógica de tokenização aqui
     const tokenizarVeiculo = async () => {
-      const resposta = await fetch('https://api.tokenizafora.com/tokenizar', {
+      const resposta = await fetch('http://localhost:3001/tokenizar', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
