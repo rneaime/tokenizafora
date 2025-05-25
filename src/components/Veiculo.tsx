@@ -4,19 +4,19 @@ function Veiculo() {
   const [veiculos, setVeiculos] = useState([]);
 
   useEffect(() => {
-    // L\u00f3gica de carregar ve\u00edculos aqui
+    // Lógica de carregar veículos aqui
   }, []);
 
   return (
     <div>
-      <h2>Ve\u00edculos</h2>
+      <h2>Veículos</h2>
       <table>
         <thead>
           <tr>
             <th>RENAVAM</th>
             <th>Placa</th>
-            <th>Propriet\u00e1rio</th>
-            <th>Valor do Ve\u00edculo</th>
+            <th>Proprietário</th>
+            <th>Valor do Veículo</th>
           </tr>
         </thead>
         <tbody>
