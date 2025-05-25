@@ -4,7 +4,7 @@ function Garantia() {
   const [garantias, setGarantias] = useState([]);
 
   useEffect(() => {
-    // L\u00f3gica de carregar garantias aqui
+    // Lógica de carregar garantias aqui
   }, []);
 
   return (
@@ -14,8 +14,8 @@ function Garantia() {
         <thead>
           <tr>
             <th>ID da Garantia</th>
-            <th>Ve\u00edculo</th>
-            <th>Propriet\u00e1rio</th>
+            <th>Veículo</th>
+            <th>Proprietário</th>
             <th>Valor da Garantia</th>
             <th>Status da Garantia</th>
           </tr>
