@@ -11,7 +11,7 @@ export default defineConfig({
     extensions: ['.js', '.ts', '.jsx', '.tsx']
   },
   server: {
-    port: 8080,
+    port: 8081,
     open: true,
     headers: {
       'Cache-Control': 'no-cache'
