@@ -4,8 +4,19 @@ import { json } from 'body-parser';
 const app = express();
 app.use(json());
 
+// Middleware de autenticação
+const autenticar = (req: Request, res: Response, next: any) => {
+  const token = req.headers.authorization;
+  if (token) {
+    // Lógica para verificar token aqui
+    next();
+  } else {
+    res.status(401).json({ mensagem: 'Acesso não autorizado' });
+  }
+};
+
 // Rotas para garantias
-app.get('/garantias', (req: Request, res: Response) => {
+app.get('/garantias', autenticar, (req: Request, res: Response) => {
   // Lógica para carregar garantias aqui
   const garantias = [
     { id: 1, veiculo: 'Veículo 1', proprietario: 'Proprietário 1', valorDaGarantia: 1000, statusDaGarantia: 'Ativa' },
@@ -14,7 +25,7 @@ app.get('/garantias', (req: Request, res: Response) => {
   res.json(garantias);
 });
 
-app.post('/garantias', (req: Request, res: Response) => {
+app.post('/garantias', autenticar, (req: Request, res: Response) => {
   // Lógica para criar garantia aqui
   const { id, veiculo, proprietario, valorDaGarantia, statusDaGarantia } = req.body;
   const garantia = { id, veiculo, proprietario, valorDaGarantia, statusDaGarantia };
@@ -23,7 +34,7 @@ app.post('/garantias', (req: Request, res: Response) => {
 });
 
 // Rotas para tokenização
-app.post('/tokenizar', (req: Request, res: Response) => {
+app.post('/tokenizar', autenticar, (req: Request, res: Response) => {
   // Lógica para tokenizar veículo aqui
   const { renavam, placa, proprietario, valorDoVeiculo } = req.body;
   const tokenizado = { renavam, placa, proprietario, valorDoVeiculo };
@@ -31,7 +42,7 @@ app.post('/tokenizar', (req: Request, res: Response) => {
 });
 
 // Rotas para veículos
-app.get('/veiculos', (req: Request, res: Response) => {
+app.get('/veiculos', autenticar, (req: Request, res: Response) => {
   // Lógica para carregar veículos aqui
   const veiculos = [
     { renavam: '1234567890', placa: 'ABC1234', proprietario: 'Proprietário 1', valorDoVeiculo: 10000 },
@@ -40,7 +51,7 @@ app.get('/veiculos', (req: Request, res: Response) => {
   res.json(veiculos);
 });
 
-app.post('/veiculos', (req: Request, res: Response) => {
+app.post('/veiculos', autenticar, (req: Request, res: Response) => {
   // Lógica para criar veículo aqui
   const { renavam, placa, proprietario, valorDoVeiculo } = req.body;
   const veiculo = { renavam, placa, proprietario, valorDoVeiculo };
