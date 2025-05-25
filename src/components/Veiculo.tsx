@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { carregarVeiculos, criarVeiculo } from '../services/veiculos';
 
 function Veiculo() {
   const [veiculos, setVeiculos] = useState([]);
@@ -9,31 +10,16 @@ function Veiculo() {
 
   useEffect(() => {
     const carregarVeiculos = async () => {
-      const resposta = await fetch('http://localhost:3001/veiculos');
-      const dados = await resposta.json();
-      setVeiculos(dados);
+      const resposta = await carregarVeiculos();
+      setVeiculos(resposta);
     };
     carregarVeiculos();
   }, []);
 
   const handleCriarVeiculo = async () => {
-    const criarVeiculo = async () => {
-      const resposta = await fetch('http://localhost:3001/veiculos', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          renavam,
-          placa,
-          proprietario,
-          valorDoVeiculo
-        })
-      });
-      const dados = await resposta.json();
-      console.log(dados);
-    };
-    criarVeiculo();
+    const veiculo = { renavam, placa, proprietario, valorDoVeiculo };
+    const resposta = await criarVeiculo(veiculo);
+    console.log(resposta);
   };
 
   return (
