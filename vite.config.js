@@ -7,7 +7,8 @@ export default defineConfig({
     port: 5173,
     headers: {
       'Cache-Control': 'no-cache'
-    }
+    },
+    base: './public'
   },
   build: {
     outDir: 'dist'
