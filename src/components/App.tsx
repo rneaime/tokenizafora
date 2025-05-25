@@ -1,8 +1,16 @@
 import React from 'react';
-import AppLayout from './AppLayout';
+import Header from './Header';
+import Footer from './Footer';
+import Tokenizer from './Tokenizer';
 
 function App() {
-  return <AppLayout />;
+  return (
+    <div>
+      <Header />
+      <Tokenizer />
+      <Footer />
+    </div>
+  );
 }
 
 export default App;
