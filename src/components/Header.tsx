@@ -1,22 +1,12 @@
 import React from 'react';
+import Button from './Button';
+import Input from './Input';
 
 function Header() {
   return (
     <div>
-      <h1>Tokenizafora</h1>
-      <nav>
-        <ul>
-          <li>
-            <a href="#">Tokenizar</a>
-          </li>
-          <li>
-            <a href="#">Gerenciar Garantias</a>
-          </li>
-          <li>
-            <a href="#">Consultar Veículos</a>
-          </li>
-        </ul>
-      </nav>
+      <Button />
+      <Input />
     </div>
   );
 }
