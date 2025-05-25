@@ -1,7 +1,12 @@
 import React from 'react';
+import Card from '../components/Card';
 
 function IATerminalPage() {
-  return <div>Página do terminal IA!</div>;
+  return (
+    <div>
+      <Card />
+    </div>
+  );
 }
 
 export default IATerminalPage;
