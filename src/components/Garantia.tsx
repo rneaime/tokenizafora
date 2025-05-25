@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { carregarGarantias, criarGarantia } from '../services/garantias';
 
 function Garantia() {
   const [garantias, setGarantias] = useState([]);
@@ -10,32 +11,16 @@ function Garantia() {
 
   useEffect(() => {
     const carregarGarantias = async () => {
-      const resposta = await fetch('http://localhost:3001/garantias');
-      const dados = await resposta.json();
-      setGarantias(dados);
+      const resposta = await carregarGarantias();
+      setGarantias(resposta);
     };
     carregarGarantias();
   }, []);
 
   const handleCriarGarantia = async () => {
-    const criarGarantia = async () => {
-      const resposta = await fetch('http://localhost:3001/garantias', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          id,
-          veiculo,
-          proprietario,
-          valorDaGarantia,
-          statusDaGarantia
-        })
-      });
-      const dados = await resposta.json();
-      console.log(dados);
-    };
-    criarGarantia();
+    const garantia = { id, veiculo, proprietario, valorDaGarantia, statusDaGarantia };
+    const resposta = await criarGarantia(garantia);
+    console.log(resposta);
   };
 
   return (
