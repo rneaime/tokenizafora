@@ -7,12 +7,12 @@ function Tokenizer() {
   const [valorDoVeiculo, setValorDoVeiculo] = useState('');
 
   const handleTokenizar = async () => {
-    // L\u00f3gica de tokeniza\u00e7\u00e3o aqui
+    // Lógica de tokenização aqui
   };
 
   return (
     <div>
-      <h2>Tokenizar Ve\u00edculo</h2>
+      <h2>Tokenizar Veículo</h2>
       <form>
         <label>
           RENAVAM:
@@ -23,11 +23,11 @@ function Tokenizer() {
           <input type='text' value={placa} onChange={(e) => setPlaca(e.target.value)} />
         </label>
         <label>
-          Propriet\u00e1rio:
+          Proprietário:
           <input type='text' value={proprietario} onChange={(e) => setProprietario(e.target.value)} />
         </label>
         <label>
-          Valor do Ve\u00edculo:
+          Valor do Veículo:
           <input type='number' value={valorDoVeiculo} onChange={(e) => setValorDoVeiculo(e.target.value)} />
         </label>
         <button onClick={handleTokenizar}>Tokenizar</button>
