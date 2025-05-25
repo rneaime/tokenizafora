@@ -5,6 +5,12 @@ function Garantia() {
 
   useEffect(() => {
     // Lógica de carregar garantias aqui
+    const carregarGarantias = async () => {
+      const resposta = await fetch('https://api.tokenizafora.com/garantias');
+      const dados = await resposta.json();
+      setGarantias(dados);
+    };
+    carregarGarantias();
   }, []);
 
   return (
