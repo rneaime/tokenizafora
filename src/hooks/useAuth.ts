@@ -56,4 +56,4 @@ const useAuth = () => {
   return { autorizado, usuario, token, login, logout };
 };
 
-export default useAuth;
+export { useAuth };
