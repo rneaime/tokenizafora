@@ -17,7 +17,16 @@ app.use(cors());
 
 // Define public directory path properly for ES modules
 const publicPath = path.join(__dirname, '../public');
+const distPath = path.join(__dirname, '../dist');
 app.use(express.static(publicPath));
+app.use(express.static(distPath));
+
+// Desativa o cache
+app.use((req, res, next) => {
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('Expires', '-1');
+  next();
+});
 
 // Middleware de autenticação
 const autenticar = (req: Request, res: Response, next: any) => {
@@ -129,7 +138,7 @@ const vite = await createServer({
 // Use Vite's middleware in development mode
 app.use(vite.middlewares);
 
-// Start Express server only if Vite is not handling it
+// Start Express server
 app.listen(3001, () => {
-  console.log('Servidor rodando na porta 3001');
+  console.log('Servidor iniciado na porta 3001');
 });
