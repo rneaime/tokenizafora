@@ -1,9 +1,13 @@
 import express, { Request, Response } from 'express';
 import { json } from 'body-parser';
 import jwt from 'jsonwebtoken';
+import path from 'path';
+import cors from 'cors';
 
 const app = express();
 app.use(json());
+app.use(cors());
+app.use(express.static('public'));
 
 // Middleware de autenticação
 const autenticar = (req: Request, res: Response, next: any) => {
@@ -89,8 +93,8 @@ app.get('/verificar-autorizacao', (req: Request, res: Response) => {
   }
 });
 
-app.get('/', (req: Request, res: Response) => {
-  res.send('Bem-vindo ao servidor!');
+app.get('*', (req: Request, res: Response) => {
+  res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
 app.listen(3001, () => {
