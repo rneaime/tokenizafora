@@ -8,7 +8,14 @@ export default defineConfig({
     headers: {
       'Cache-Control': 'no-cache'
     },
-    base: './public'
+    base: './public',
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3001',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, '')
+      }
+    }
   },
   build: {
     outDir: 'dist'
