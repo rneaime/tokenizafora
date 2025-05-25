@@ -5,6 +5,12 @@ function Veiculo() {
 
   useEffect(() => {
     // Lógica de carregar veículos aqui
+    const carregarVeiculos = async () => {
+      const resposta = await fetch('https://api.tokenizafora.com/veiculos');
+      const dados = await resposta.json();
+      setVeiculos(dados);
+    };
+    carregarVeiculos();
   }, []);
 
   return (
