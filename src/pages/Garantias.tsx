@@ -1,8 +1,12 @@
 import React from 'react';
-import Garantia from '../components/Garantia';
+import Card from '../components/Card';
 
 function Garantias() {
-  return <Garantia />;
+  return (
+    <div>
+      <Card />
+    </div>
+  );
 }
 
 export default Garantias;
