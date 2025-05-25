@@ -8,6 +8,23 @@ function Tokenizer() {
 
   const handleTokenizar = async () => {
     // Lógica de tokenização aqui
+    const tokenizarVeiculo = async () => {
+      const resposta = await fetch('https://api.tokenizafora.com/tokenizar', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          renavam,
+          placa,
+          proprietario,
+          valorDoVeiculo
+        })
+      });
+      const dados = await resposta.json();
+      console.log(dados);
+    };
+    tokenizarVeiculo();
   };
 
   return (
