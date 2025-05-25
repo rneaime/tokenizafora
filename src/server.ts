@@ -126,7 +126,6 @@ const vite = await createServer({
 app.use(vite.middlewares);
 
 // Start Express server only if Vite is not handling it
-// For production mode
 app.listen(3001, () => {
   console.log('Servidor rodando na porta 3001');
 });
