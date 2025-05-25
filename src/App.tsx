@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import Garantia from './components/Garantia';
 import Tokenizer from './components/Tokenizer';
 import Veiculo from './components/Veiculo';
+import Error from './components/Error';
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
         <Route path="/garantias" element={<Garantia />} />
         <Route path="/tokenizar" element={<Tokenizer />} />
         <Route path="/veiculos" element={<Veiculo />} />
+        <Route path="*" element={<Error />} />
       </Routes>
     </BrowserRouter>
   );
