@@ -8,6 +8,14 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 app.use(express.static('public'));
+app.use(express.static('dist'));
+
+// Desativa o cache
+app.use((req, res, next) => {
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('Expires', '-1');
+  next();
+});
 
 // Middleware de autenticação
 const autenticar = (req: Request, res: Response, next: any) => {
@@ -93,14 +101,6 @@ app.get('/verificar-autorizacao', (req: Request, res: Response) => {
   }
 });
 
-app.get('/main', (req: Request, res: Response) => {
-  res.sendFile(path.join(__dirname, '../public/index.html'));
-});
-
-app.get('*', (req: Request, res: Response) => {
-  res.sendFile(path.join(__dirname, '../public/index.html'));
-});
-
 app.listen(3001, () => {
-  console.log('Servidor rodando na porta 3001');
+  console.log('Servidor iniciado na porta 3001');
 });
