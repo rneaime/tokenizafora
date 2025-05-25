@@ -3,7 +3,6 @@ import bodyParser from 'body-parser';
 import jwt from 'jsonwebtoken';
 import path from 'path';
 import cors from 'cors';
-import { createServer } from 'vite';
 
 const app = express();
 app.use(bodyParser.json());
@@ -96,11 +95,6 @@ app.get('/verificar-autorizacao', (req: Request, res: Response) => {
 
 app.get('*', (req: Request, res: Response) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
-});
-
-const vite = await createServer({
-  root: path.join(__dirname, '..'),
-  server: { port: 3001 }
 });
 
 app.listen(3001, () => {
