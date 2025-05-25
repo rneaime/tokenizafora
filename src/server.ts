@@ -1,16 +1,8 @@
 import express, { Request, Response } from 'express';
-<<<<<<< HEAD
-import bodyParser from 'body-parser';
-import jsonwebtoken from 'jsonwebtoken';
-
-const { json } = bodyParser;
-const jwt = jsonwebtoken;
-=======
 import { json } from 'body-parser';
 import jwt from 'jsonwebtoken';
 import path from 'path';
 import cors from 'cors';
->>>>>>> 6ca7ea6ee4c753b28ad6a148b978302af28daef1
 
 const app = express();
 app.use(json());
