@@ -1,2 +1,0 @@
-# tokenizafora
-app tokenizafora
