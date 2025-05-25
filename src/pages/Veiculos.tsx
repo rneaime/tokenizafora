@@ -1,8 +1,12 @@
 import React from 'react';
-import Veiculo from '../components/Veiculo';
+import Card from '../components/Card';
 
 function Veiculos() {
-  return <Veiculo />;
+  return (
+    <div>
+      <Card />
+    </div>
+  );
 }
 
 export default Veiculos;
