@@ -1,5 +1,6 @@
 import express, { Request, Response } from 'express';
 import { json } from 'body-parser';
+import jwt from 'jsonwebtoken';
 
 const app = express();
 app.use(json());
@@ -8,8 +9,13 @@ app.use(json());
 const autenticar = (req: Request, res: Response, next: any) => {
   const token = req.headers.authorization;
   if (token) {
-    // Lógica para verificar token aqui
-    next();
+    jwt.verify(token, 'chave_secreta', (err, decoded) => {
+      if (err) {
+        res.status(401).json({ mensagem: 'Acesso não autorizado' });
+      } else {
+        next();
+      }
+    });
   } else {
     res.status(401).json({ mensagem: 'Acesso não autorizado' });
   }
@@ -64,17 +70,22 @@ app.post('/login', (req: Request, res: Response) => {
   const { username, password } = req.body;
   // Lógica para autenticar o usuário aqui
   const usuario = { username, password };
-  const token = 'token_de_autorizacao';
+  const token = jwt.sign(usuario, 'chave_secreta', { expiresIn: '1h' });
   res.json({ autorizado: true, token, usuario });
 });
 
 app.get('/verificar-autorizacao', (req: Request, res: Response) => {
   const token = req.headers.authorization;
   if (token) {
-    // Lógica para verificar autorização aqui
-    res.json({ autorizado: true, usuario: { username: 'usuário', password: 'senha' } });
+    jwt.verify(token, 'chave_secreta', (err, decoded) => {
+      if (err) {
+        res.status(401).json({ mensagem: 'Acesso não autorizado' });
+      } else {
+        res.json({ autorizado: true, usuario: decoded });
+      }
+    });
   } else {
-    res.json({ autorizado: false, usuario: null });
+    res.status(401).json({ mensagem: 'Acesso não autorizado' });
   }
 });
 
