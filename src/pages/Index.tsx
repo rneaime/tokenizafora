@@ -1,7 +1,11 @@
 import React from 'react';
 
 function Index() {
-  return <div>Bem-vindo à Tokenizafora!</div>;
+  return (
+    <div>
+      <h1>Bem-vindo à Tokenizafora!</h1>
+    </div>
+  );
 }
 
 export default Index;
