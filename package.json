@@ -1,8 +1,8 @@
-[
+
   {
     "acao": "editar",
     "arquivo": "package.json",
     "conteudo": "{\"name\": \"tokenizafora\", \"version\": \"1.0.0\", \"scripts\": {\"dev\": \"vite\", \"build\": \"vite build\", \"serve\": \"vite serve\"}, \"dependencies\": {\"react\": \"^18.2.0\", \"react-dom\": \"^18.2.0\"}, \"devDependencies\": {\"@vitejs/plugin-react\": \"^2.2.0\", \"vite\": \"^4.1.0\"}}",
     "mensagem": "Adicionado script dev ao package.json"
   }
-]
+
