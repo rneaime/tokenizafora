@@ -93,10 +93,10 @@ apiRouter.get('/veiculos', autenticar, (req: Request, res: Response) => {
 
 // Conecta ao banco de dados
 const pool = new Pool({
-  user: 'seu_usuario',
+  user: 'tokenizafora_user',
   host: 'localhost',
-  database: 'nome_do_banco',
-  password: 'sua_senha',
+  database: 'tokenizafora',
+  password: 'tokenizafora_password',
   port: 5432,
 });
 
