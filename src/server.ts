@@ -29,13 +29,8 @@ const publicPath = path.join(__dirname, '../public');
 const distPath = path.join(__dirname, '../dist');
 
 // Serve static files with proper content types
-app.use(express.static(distPath, {
-  setHeaders: (res: Response, filePath: string) => {
-    if (filePath.endsWith('.js')) {
-      res.setHeader('Content-Type', 'application/javascript');
-    }
-  }
-}));
+app.use(express.static(distPath));
+app.use(express.static(publicPath));
 // Interface for JWT payload
 interface JWTPayload {
   username: string;
