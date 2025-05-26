@@ -1,14 +1,14 @@
 import React, { Component, ReactNode, useState, useEffect, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Link, Navigate } from 'react-router-dom';
-import Garantia from './components/Garantia.js';
-import Tokenizer from './components/Tokenizer.js';
-import Veiculo from './components/Veiculo.js';
-import Error from './components/Error.js';
-import Login from './components/Login.js';
-import CadastroGarantia from './components/CadastroGarantia.js';
-import CadastroVeiculo from './components/CadastroVeiculo.js';
-import CadastroTokenizer from './components/CadastroTokenizer.js';
-import { useAuth } from './hooks/useAuth.js';
+import Garantia from './components/Garantia';
+import Tokenizer from './components/Tokenizer';
+import Veiculo from './components/Veiculo';
+import Error from './components/Error';
+import Login from './components/Login';
+import CadastroGarantia from './components/CadastroGarantia';
+import CadastroVeiculo from './components/CadastroVeiculo';
+import CadastroTokenizer from './components/CadastroTokenizer';
+import { useAuth } from './hooks/useAuth';
 import './App.css';
 
 // Error boundary to catch errors in child components

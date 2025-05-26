@@ -3,7 +3,7 @@
     "target": "ES2022",
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "module": "ESNext",
-    "moduleResolution": "node16",
+    "moduleResolution": "node",
     "allowJs": true,
     "jsx": "react-jsx",
     "strict": true,
