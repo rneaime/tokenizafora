@@ -29,8 +29,13 @@ const publicPath = path.join(__dirname, '../public');
 const distPath = path.join(__dirname, '../dist');
 
 // Serve static files with proper content types
-app.use(express.static(distPath));
-app.use(express.static(publicPath));
+app.use(express.static(distPath, {
+  setHeaders: (res: Response, filePath: string) => {
+    if (filePath.endsWith('.js')) {
+      res.setHeader('Content-Type', 'application/javascript');
+    }
+  }
+}));
 // Interface for JWT payload
 interface JWTPayload {
   username: string;
@@ -85,32 +90,60 @@ apiRouter.get('/veiculos', autenticar, (req: Request, res: Response) => {
   res.json(veiculos);
 });
 
-// Rota para login
-app.get('/login', (req: Request, res: Response) => {
-  res.sendFile(path.join(__dirname, '../public/index.html'));
-});
-
-// Rota para realizar login
-app.post('/login', (req: Request, res: Response) => {
+// Rotas para autorização
+apiRouter.post('/login', (req: Request, res: Response) => {
   const { username, password } = req.body;
-  // Lógica para realizar o login aqui
+  // Lógica para autenticar o usuário aqui
   if (username === 'admin' && password === 'admin') {
-    const token = jwt.sign({ username, password }, 'chave_secreta', {
-      expiresIn: '1h'
-    });
-    res.json({ token });
+    const usuario: JWTPayload = { username, password };
+    const token = jwt.sign(usuario, 'chave_secreta', { expiresIn: '1h' });
+    res.json({ autorizado: true, token, usuario });
   } else {
-    res.status(401).json({ mensagem: 'Credenciais inválidas' });
+    res.status(401).json({ mensagem: 'Usuário ou senha inválidos' });
   }
 });
 
-app.use('/api', apiRouter);
-
-app.get('/favicon.ico', (req: Request, res: Response) => {
-  res.setHeader('Content-Security-Policy', "default-src 'self'; img-src 'self'; object-src 'none';");
-  res.sendFile(path.join(__dirname, '../public/favicon.ico'));
+apiRouter.get('/verificar-autorizacao', (req: Request, res: Response) => {
+  const token = req.headers.authorization;
+  if (token) {
+    jwt.verify(token, 'chave_secreta', (err: jwt.VerifyErrors | null, decoded: any) => {
+      if (err) {
+        res.status(401).json({ mensagem: 'Acesso não autorizado' });
+      } else {
+        res.json({ autorizado: true, usuario: decoded });
+      }
+    });
+  } else {
+    res.status(401).json({ mensagem: 'Acesso não autorizado' });
+  }
 });
 
+apiRouter.post('/logout', (req: Request, res: Response) => {
+  // Lógica para desautenticar o usuário aqui
+  res.json({ autorizado: false });
+});
+
+// Mount API router with /api prefix
+app.use('/api', apiRouter);
+
+// Error handler middleware
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  console.error(err.stack);
+  res.status(500).json({ 
+    error: 'Internal Server Error', 
+    message: err.message 
+  });
+});
+
+// Handle OPTIONS requests for CORS preflight
+app.options('/*', cors());
+
+// For any other request, serve the frontend app
+app.get('/*', (req: Request, res: Response) => {
+  res.sendFile(path.join(distPath, 'index.html'));
+});
+
+// Start the server
 app.listen(PORT, () => {
-  console.log(`Servidor iniciado na porta ${PORT}`);
+  console.log(`Servidor rodando na porta ${PORT}`);
 });
