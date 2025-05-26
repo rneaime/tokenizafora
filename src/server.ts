@@ -90,6 +90,15 @@ app.get('/', (req: Request, res: Response) => {
   res.sendFile(path.join(__dirname, '../index.html'));
 });
 
+app.get('/dist/*', (req: Request, res: Response) => {
+  res.sendFile(path.join(__dirname, '../dist', req.params[0]));
+});
+
+app.get('/dist/main.js', (req: Request, res: Response) => {
+  res.set('Content-Type', 'application/javascript');
+  res.sendFile(path.join(__dirname, '../dist/main.js'));
+});
+
 app.listen(3001, () => {
   console.log('Servidor rodando na porta 3001');
 });
