@@ -85,22 +85,3 @@ app.post('/login', (req: Request, res: Response) => {
   const token = jwt.sign(usuario, 'chave_secreta', { expiresIn: '1h' });
   res.json({ autorizado: true, token, usuario });
 });
-
-app.get('/verificar-autorizacao', (req: Request, res: Response) => {
-  const token = req.headers.authorization;
-  if (token) {
-    jwt.verify(token, 'chave_secreta', (err, decoded) => {
-      if (err) {
-        res.status(401).json({ mensagem: 'Acesso não autorizado' });
-      } else {
-        res.json({ autorizado: true, usuario: decoded });
-      }
-    });
-  } else {
-    res.status(401).json({ mensagem: 'Acesso não autorizado' });
-  }
-});
-
-app.listen(3001, () => {
-  console.log('Servidor iniciado na porta 3001');
-});
