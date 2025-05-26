@@ -166,5 +166,5 @@ app.get('*', (req: Request, res: Response) => {
 
 // Start Express server
 app.listen(3001, () => {
-  console.log('Servidor está rodando na porta 3001');
+  console.log('Servidor rodando na porta 3001');
 });
