@@ -86,9 +86,8 @@ app.post('/login', (req: Request, res: Response) => {
   res.json({ autorizado: true, token, usuario });
 });
 
-app.get('/dist/main.js', (req: Request, res: Response) => {
-  res.setHeader('Content-Type', 'application/javascript');
-  res.sendFile(path.join(__dirname, '../dist/main.js'));
+app.get('/', (req: Request, res: Response) => {
+  res.sendFile(path.join(__dirname, '../index.html'));
 });
 
 app.listen(3001, () => {
