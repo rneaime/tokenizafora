@@ -5,6 +5,9 @@ import Tokenizer from './components/Tokenizer.js';
 import Veiculo from './components/Veiculo.js';
 import Error from './components/Error.js';
 import Login from './components/Login.js';
+import CadastroGarantia from './components/CadastroGarantia.js';
+import CadastroVeiculo from './components/CadastroVeiculo.js';
+import CadastroTokenizer from './components/CadastroTokenizer.js';
 import { useAuth } from './hooks/useAuth.js';
 
 // Error boundary to catch errors in child components
@@ -67,11 +70,11 @@ function App(): JSX.Element {
   }
 
   return (
-    <ErrorBoundary fallback={<div>Algo deu errado. Por favor, recarregue a página.</div>}>
+    <ErrorBoundary fallback={<div>Algo deu errado. Por favor, recarregue a página.</div>}> 
       <BrowserRouter>
-        <Suspense fallback={<div>Carregando componente...</div>}>
+        <Suspense fallback={<div>Carregando componente...</div>}>          
           {autorizado ? (
-            <>
+            <>              
               <nav>
                 <ul>
                   <li>
@@ -96,10 +99,26 @@ function App(): JSX.Element {
                   } 
                 />
                 <Route 
+                  path="/garantias/cadastro" 
+                  element={
+                    <ProtectedRoute isAuthorized={autorizado}>
+                      <CadastroGarantia />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
                   path="/tokenizar" 
                   element={
                     <ProtectedRoute isAuthorized={autorizado}>
                       <Tokenizer />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/tokenizar/cadastro" 
+                  element={
+                    <ProtectedRoute isAuthorized={autorizado}>
+                      <CadastroTokenizer />
                     </ProtectedRoute>
                   } 
                 />
@@ -111,20 +130,23 @@ function App(): JSX.Element {
                     </ProtectedRoute>
                   } 
                 />
-                <Route path="/login" element={<Login />} />
-                <Route path="*" element={<Error />} />
+                <Route 
+                  path="/veiculos/cadastro" 
+                  element={
+                    <ProtectedRoute isAuthorized={autorizado}>
+                      <CadastroVeiculo />
+                    </ProtectedRoute>
+                  } 
+                />
               </Routes>
             </>
           ) : (
-            <Routes>
+            <>
               <Route path="/login" element={<Login />} />
-              <Route path="*" element={<Navigate to="/login" replace />} />
-            </Routes>
+            </>
           )}
         </Suspense>
       </BrowserRouter>
     </ErrorBoundary>
   );
 }
-
-export default App;
