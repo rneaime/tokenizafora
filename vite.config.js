@@ -6,6 +6,12 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     chunkSizeWarningLimit: 1024,
+    assets: [
+      {
+        type: 'js',
+        mimeType: 'application/javascript',
+      },
+    ],
   },
   resolve: {
     extensions: ['.js', '.ts', '.tsx']
