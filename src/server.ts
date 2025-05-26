@@ -5,10 +5,18 @@ import path from 'path';
 import cors from 'cors';
 
 const app = express();
+const serveStatic = require('serve-static');
 
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static('dist'));
+
+app.use(serveStatic(path.join(__dirname, '../dist'), {
+  setHeaders: (res, path) => {
+    if (path.endsWith('.js')) {
+      res.setHeader('Content-Type', 'application/javascript');
+    }
+  }
+}));
 
 const autenticar = (req: Request, res: Response, next: any) => {
   const token = req.headers.authorization;
@@ -60,11 +68,6 @@ app.post('/login', (req: Request, res: Response) => {
   const usuario = { username, password };
   const token = jsonwebtoken.sign(usuario, 'chave_secreta', { expiresIn: '1h' });
   res.json({ autorizado: true, token, usuario });
-});
-
-app.get('/dist/main.js', (req, res) => {
-  res.setHeader('Content-Type', 'application/javascript');
-  res.sendFile(path.join(__dirname, '../dist/main.js'));
 });
 
 app.listen(3001, () => {
