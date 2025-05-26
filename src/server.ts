@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response, NextFunction, Router } from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import jwt from 'jsonwebtoken';
@@ -18,7 +18,7 @@ app.use(bodyParser.json({ limit: '50mb' }));
 app.use(cors());
 
 // Configure headers for caching and content types
-app.use((req, res, next) => {
+app.use((req: Request, res: Response, next: NextFunction) => {
   res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
   res.setHeader('Expires', '-1');
   next();
@@ -30,17 +30,24 @@ const distPath = path.join(__dirname, '../dist');
 
 // Serve static files with proper content types
 app.use(express.static(distPath, {
-  setHeaders: (res, filePath) => {
+  setHeaders: (res: Response, filePath: string) => {
     if (filePath.endsWith('.js')) {
       res.setHeader('Content-Type', 'application/javascript');
     }
   }
 }));
+// Interface for JWT payload
+interface JWTPayload {
+  username: string;
+  password: string;
+  [key: string]: any;
+}
+
 // Middleware de autenticação
-const autenticar = (req, res, next) => {
+const autenticar = (req: Request, res: Response, next: NextFunction) => {
   const token = req.headers.authorization;
   if (token) {
-    jwt.verify(token, 'chave_secreta', (err, decoded) => {
+    jwt.verify(token, 'chave_secreta', (err: jwt.VerifyErrors | null, decoded: any) => {
       if (err) {
         res.status(401).json({ mensagem: 'Acesso não autorizado' });
       } else {
@@ -53,10 +60,10 @@ const autenticar = (req, res, next) => {
 };
 
 // API Routes - All API routes have /api prefix
-const apiRouter = express.Router();
+const apiRouter: Router = express.Router();
 
 // Rotas para garantias
-apiRouter.get('/garantias', autenticar, (req, res) => {
+apiRouter.get('/garantias', autenticar, (req: Request, res: Response) => {
   // Lógica para carregar garantias aqui
   const garantias = [
     { id: 1, veiculo: 'Veículo 1', proprietario: 'Proprietário 1', valorDaGarantia: 1000, statusDaGarantia: 'Ativa' },
@@ -66,7 +73,7 @@ apiRouter.get('/garantias', autenticar, (req, res) => {
 });
 
 // Rotas para tokenização
-apiRouter.post('/tokenizar', autenticar, (req, res) => {
+apiRouter.post('/tokenizar', autenticar, (req: Request, res: Response) => {
   // Lógica para tokenizar veículo aqui
   const { renavam, placa, proprietario, valorDoVeiculo } = req.body;
   const tokenizado = { renavam, placa, proprietario, valorDoVeiculo };
@@ -74,7 +81,7 @@ apiRouter.post('/tokenizar', autenticar, (req, res) => {
 });
 
 // Rotas para veículos
-apiRouter.get('/veiculos', autenticar, (req, res) => {
+apiRouter.get('/veiculos', autenticar, (req: Request, res: Response) => {
   // Lógica para carregar veículos aqui
   const veiculos = [
     { renavam: '1234567890', placa: 'ABC1234', proprietario: 'Proprietário 1', valorDoVeiculo: 10000 },
@@ -84,18 +91,18 @@ apiRouter.get('/veiculos', autenticar, (req, res) => {
 });
 
 // Rotas para autorização
-apiRouter.post('/login', (req, res) => {
+apiRouter.post('/login', (req: Request, res: Response) => {
   const { username, password } = req.body;
   // Lógica para autenticar o usuário aqui
-  const usuario = { username, password };
+  const usuario: JWTPayload = { username, password };
   const token = jwt.sign(usuario, 'chave_secreta', { expiresIn: '1h' });
   res.json({ autorizado: true, token, usuario });
 });
 
-apiRouter.get('/verificar-autorizacao', (req, res) => {
+apiRouter.get('/verificar-autorizacao', (req: Request, res: Response) => {
   const token = req.headers.authorization;
   if (token) {
-    jwt.verify(token, 'chave_secreta', (err, decoded) => {
+    jwt.verify(token, 'chave_secreta', (err: jwt.VerifyErrors | null, decoded: any) => {
       if (err) {
         res.status(401).json({ mensagem: 'Acesso não autorizado' });
       } else {
@@ -107,7 +114,7 @@ apiRouter.get('/verificar-autorizacao', (req, res) => {
   }
 });
 
-apiRouter.post('/logout', (req, res) => {
+apiRouter.post('/logout', (req: Request, res: Response) => {
   // Lógica para desautenticar o usuário aqui
   res.json({ autorizado: false });
 });
@@ -116,7 +123,7 @@ apiRouter.post('/logout', (req, res) => {
 app.use('/api', apiRouter);
 
 // Error handler middleware
-app.use((err, req, res, next) => {
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   console.error(err.stack);
   res.status(500).json({ 
     error: 'Internal Server Error', 
@@ -124,8 +131,11 @@ app.use((err, req, res, next) => {
   });
 });
 
+// Handle OPTIONS requests for CORS preflight
+app.options('/*', cors());
+
 // For any other request, serve the frontend app
-app.get('*', (req, res) => {
+app.get('/*', (req: Request, res: Response) => {
   res.sendFile(path.join(distPath, 'index.html'));
 });
 
