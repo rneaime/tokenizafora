@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
-import bodyParser from 'body-parser';
-import jsonwebtoken from 'jsonwebtoken';
 import path from 'path';
+import bodyParser from 'body-parser';
+import * as jwt from 'jsonwebtoken';
 import cors from 'cors';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
@@ -44,7 +44,7 @@ app.use(vite.middlewares);
 const autenticar = (req: Request, res: Response, next: any) => {
   const token = req.body.token;
   if (token) {
-    jsonwebtoken.verify(token, 'chave_secreta', (err, decoded) => {
+    jwt.verify(token, 'chave_secreta', (err, decoded) => {
       if (err) {
         res.status(401).json({ mensagem: 'Acesso não autorizado' });
       } else {
@@ -105,14 +105,14 @@ app.post('/login', (req: Request, res: Response) => {
   const { username, password } = req.body;
   // Lógica para autenticar o usuário aqui
   const usuario = { username, password };
-  const token = jsonwebtoken.sign(usuario, 'chave_secreta', { expiresIn: '1h' });
+  const token = jwt.sign(usuario, 'chave_secreta', { expiresIn: '1h' });
   res.json({ autorizado: true, token, usuario });
 });
 
 app.get('/verificar-autorizacao', (req: Request, res: Response) => {
   const token = req.headers.authorization;
   if (token) {
-    jsonwebtoken.verify(token, 'chave_secreta', (err, decoded) => {
+    jwt.verify(token, 'chave_secreta', (err, decoded) => {
       if (err) {
         res.status(401).json({ mensagem: 'Acesso não autorizado' });
       } else {
@@ -137,6 +137,11 @@ app.get('/', (req: Request, res: Response) => {
 // Main route
 app.get('/main', (req: Request, res: Response) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
+});
+
+// Add route for JavaScript file
+app.get('/dist/main.js', (req: Request, res: Response) => {
+  res.sendFile(path.join(__dirname, '../dist/main.js'));
 });
 
 // 404 middleware - capture API routes that don't match
