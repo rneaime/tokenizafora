@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import { Pool } from 'pg';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -90,60 +91,81 @@ apiRouter.get('/veiculos', autenticar, (req: Request, res: Response) => {
   res.json(veiculos);
 });
 
-// Rotas para autorização
-apiRouter.post('/login', (req: Request, res: Response) => {
-  const { username, password } = req.body;
-  // Lógica para autenticar o usuário aqui
-  if (username === 'admin' && password === 'admin') {
-    const usuario: JWTPayload = { username, password };
-    const token = jwt.sign(usuario, 'chave_secreta', { expiresIn: '1h' });
-    res.json({ autorizado: true, token, usuario });
-  } else {
-    res.status(401).json({ mensagem: 'Usuário ou senha inválidos' });
+// Conecta ao banco de dados
+const pool = new Pool({
+  user: 'seu_usuario',
+  host: 'localhost',
+  database: 'nome_do_banco',
+  password: 'sua_senha',
+  port: 5432,
+});
+
+// Função para criar as tabelas
+const criarTabelas = async () => {
+  const queries = [
+    `CREATE TABLE IF NOT EXISTS Usuarios (
+      id SERIAL PRIMARY KEY,
+      nome VARCHAR(100) NOT NULL,
+      email VARCHAR(100) UNIQUE NOT NULL,
+      senha VARCHAR(255) NOT NULL
+    );`,
+    `CREATE TABLE IF NOT EXISTS Veiculos (
+      id SERIAL PRIMARY KEY,
+      renavam VARCHAR(20) UNIQUE NOT NULL,
+      placa VARCHAR(10) NOT NULL,
+      modelo VARCHAR(100) NOT NULL,
+      ano INTEGER NOT NULL,
+      valor_do_veiculo DECIMAL(10, 2) NOT NULL,
+      proprietario_id INTEGER NOT NULL,
+      FOREIGN KEY (proprietario_id) REFERENCES Usuarios(id)
+    );`,
+    `CREATE TABLE IF NOT EXISTS Garantias (
+      id SERIAL PRIMARY KEY,
+      veiculo_id INTEGER NOT NULL,
+      valor_da_garantia DECIMAL(10, 2) NOT NULL,
+      status_da_garantia VARCHAR(50) NOT NULL,
+      data_de_emissao DATE NOT NULL,
+      FOREIGN KEY (veiculo_id) REFERENCES Veiculos(id)
+    );`,
+    `CREATE TABLE IF NOT EXISTS Transacoes (
+      id SERIAL PRIMARY KEY,
+      tipo_de_transacao VARCHAR(50) NOT NULL,
+      data_da_transacao DATE NOT NULL,
+      valor_da_transacao DECIMAL(10, 2) NOT NULL,
+      veiculo_id INTEGER,
+      garantia_id INTEGER,
+      tokenizacao_id INTEGER,
+      FOREIGN KEY (veiculo_id) REFERENCES Veiculos(id),
+      FOREIGN KEY (garantia_id) REFERENCES Garantias(id),
+      FOREIGN KEY (tokenizacao_id) REFERENCES Tokenizacoes(id)
+    );`,
+    `CREATE TABLE IF NOT EXISTS Tokenizacoes (
+      id SERIAL PRIMARY KEY,
+      veiculo_id INTEGER NOT NULL,
+      data_da_tokenizacao DATE NOT NULL,
+      valor_da_tokenizacao DECIMAL(10, 2) NOT NULL,
+      FOREIGN KEY (veiculo_id) REFERENCES Veiculos(id)
+    );`,
+  ];
+
+  try {
+    for (const query of queries) {
+      await pool.query(query);
+    }
+    console.log('Tabelas criadas com sucesso.');
+  } catch (err) {
+    console.error('Erro ao criar tabelas:', err);
+  } finally {
+    await pool.end();
   }
-});
+};
 
-apiRouter.get('/verificar-autorizacao', (req: Request, res: Response) => {
-  const token = req.headers.authorization;
-  if (token) {
-    jwt.verify(token, 'chave_secreta', (err: jwt.VerifyErrors | null, decoded: any) => {
-      if (err) {
-        res.status(401).json({ mensagem: 'Acesso não autorizado' });
-      } else {
-        res.json({ autorizado: true, usuario: decoded });
-      }
-    });
-  } else {
-    res.status(401).json({ mensagem: 'Acesso não autorizado' });
-  }
-});
+// Chama a função para criar as tabelas
+criarTabelas();
 
-apiRouter.post('/logout', (req: Request, res: Response) => {
-  // Lógica para desautenticar o usuário aqui
-  res.json({ autorizado: false });
-});
-
-// Mount API router with /api prefix
 app.use('/api', apiRouter);
 
-// Error handler middleware
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  console.error(err.stack);
-  res.status(500).json({ 
-    error: 'Internal Server Error', 
-    message: err.message 
-  });
-});
-
-// Handle OPTIONS requests for CORS preflight
-app.options('/*', cors());
-
-// For any other request, serve the frontend app
-app.get('/*', (req: Request, res: Response) => {
-  res.sendFile(path.join(distPath, 'index.html'));
-});
-
-// Start the server
+// Start server
 app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
+  console.log(`Servidor iniciado na porta ${PORT}`);
 });
