@@ -11,10 +11,20 @@ import { createServer } from 'vite';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const app = express();
+const serveStatic = require('serve-static');
 
 // Configure body-parser with size limit
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(cors());
+
+// Serve static files with proper content types
+app.use(serveStatic(path.join(__dirname, '../dist'), {
+  setHeaders: (res, path) => {
+    if (path.endsWith('.js')) {
+      res.setHeader('Content-Type', 'application/javascript');
+    }
+  }
+}));
 
 // Define public directory path properly for ES modules
 const publicPath = path.join(__dirname, '../public');
@@ -94,8 +104,6 @@ app.post('/login', (req: Request, res: Response) => {
   res.json({ autorizado: true, token, usuario });
 });
 
-<<<<<<< HEAD
-
 app.get('/verificar-autorizacao', (req: Request, res: Response) => {
   const token = req.headers.authorization;
   if (token) {
@@ -110,9 +118,6 @@ app.get('/verificar-autorizacao', (req: Request, res: Response) => {
     res.status(401).json({ mensagem: 'Acesso não autorizado' });
   }
 });
-=======
-app.use(express.static(path.join(__dirname, '../dist')));
->>>>>>> 0dc00cc772c68392188286dcbd01ffe004a4b902
 
 app.post('/logout', (req: Request, res: Response) => {
   // Lógica para desautenticar o usuário aqui
