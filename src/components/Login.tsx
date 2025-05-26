@@ -1,7 +1,7 @@
 import React, { useState, FormEvent, ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth.js';
-import { verificarCredenciais, cadastrarUsuario } from '../data/usuarios';
+import { verificarCredenciais, cadastrarUsuario } from '../data/usuarios.js';
 
 function Login() {
   const [username, setUsername] = useState<string>('');
