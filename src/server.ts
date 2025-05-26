@@ -87,9 +87,12 @@ apiRouter.get('/veiculos', autenticar, (req, res) => {
 apiRouter.post('/login', (req, res) => {
   const { username, password } = req.body;
   // Lógica para autenticar o usuário aqui
-  const usuario = { username, password };
-  const token = jwt.sign(usuario, 'chave_secreta', { expiresIn: '1h' });
-  res.json({ autorizado: true, token, usuario });
+  if (username === 'admin' && password === 'admin') {
+    const token = jwt.sign({ username, password }, 'chave_secreta', { expiresIn: '1h' });
+    res.json({ autorizado: true, token, usuario: { username, password } });
+  } else {
+    res.status(401).json({ mensagem: 'Usuário ou senha inválidos' });
+  }
 });
 
 apiRouter.get('/verificar-autorizacao', (req, res) => {
