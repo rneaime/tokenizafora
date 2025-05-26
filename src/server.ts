@@ -62,7 +62,10 @@ app.post('/login', (req: Request, res: Response) => {
   res.json({ autorizado: true, token, usuario });
 });
 
-app.use(express.static(path.join(__dirname, '../dist')));
+app.get('/dist/main.js', (req, res) => {
+  res.setHeader('Content-Type', 'application/javascript');
+  res.sendFile(path.join(__dirname, '../dist/main.js'));
+});
 
 app.listen(3001, () => {
   console.log('Servidor rodando na porta 3001');
