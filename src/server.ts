@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
+import path from 'path';
 import bodyParser from 'body-parser';
 import jwt from 'jsonwebtoken';
-import path from 'path';
 import cors from 'cors';
 
 const app = express();
@@ -84,4 +84,12 @@ app.post('/login', (req: Request, res: Response) => {
   const usuario = { username, password };
   const token = jwt.sign(usuario, 'chave_secreta', { expiresIn: '1h' });
   res.json({ autorizado: true, token, usuario });
+});
+
+app.get('/dist/main.js', (req: Request, res: Response) => {
+  res.sendFile(path.join(__dirname, '../dist/main.js'));
+});
+
+app.listen(3001, () => {
+  console.log('Servidor rodando na porta 3001');
 });
