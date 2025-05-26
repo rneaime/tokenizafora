@@ -60,7 +60,7 @@ function Login() {
 
   return (
     <div>
-      <h2>Login</h2>
+      <h2>Fazer Login</h2>
       {error && <div style={{ color: 'red', marginBottom: '10px' }}>{error}</div>}
       {success && <div style={{ color: 'green', marginBottom: '10px' }}>{success}</div>}
       {loading && <p>Processando...</p>}
