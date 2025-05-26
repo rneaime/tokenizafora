@@ -1,8 +1,8 @@
 import express, { Request, Response } from 'express';
-import path from 'path';
 import bodyParser from 'body-parser';
 import * as jwt from 'jsonwebtoken';
 import cors from 'cors';
+import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import { createServer } from 'vite';
@@ -11,6 +11,7 @@ import { createServer } from 'vite';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const app = express();
+
 // Configure body-parser with size limit
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(cors());
@@ -42,7 +43,7 @@ app.use(vite.middlewares);
 
 // Middleware de autenticação
 const autenticar = (req: Request, res: Response, next: any) => {
-  const token = req.body.token;
+  const token = req.headers.authorization;
   if (token) {
     jwt.verify(token, 'chave_secreta', (err, decoded) => {
       if (err) {
@@ -66,14 +67,6 @@ app.get('/garantias', autenticar, (req: Request, res: Response) => {
   res.json(garantias);
 });
 
-app.post('/garantias', autenticar, (req: Request, res: Response) => {
-  // Lógica para criar garantia aqui
-  const { id, veiculo, proprietario, valorDaGarantia, statusDaGarantia } = req.body;
-  const garantia = { id, veiculo, proprietario, valorDaGarantia, statusDaGarantia };
-  console.log(garantia);
-  res.json(garantia);
-});
-
 // Rotas para tokenização
 app.post('/tokenizar', autenticar, (req: Request, res: Response) => {
   // Lógica para tokenizar veículo aqui
@@ -92,14 +85,6 @@ app.get('/veiculos', autenticar, (req: Request, res: Response) => {
   res.json(veiculos);
 });
 
-app.post('/veiculos', autenticar, (req: Request, res: Response) => {
-  // Lógica para criar veículo aqui
-  const { renavam, placa, proprietario, valorDoVeiculo } = req.body;
-  const veiculo = { renavam, placa, proprietario, valorDoVeiculo };
-  console.log(veiculo);
-  res.json(veiculo);
-});
-
 // Rotas para autorização
 app.post('/login', (req: Request, res: Response) => {
   const { username, password } = req.body;
@@ -108,6 +93,7 @@ app.post('/login', (req: Request, res: Response) => {
   const token = jwt.sign(usuario, 'chave_secreta', { expiresIn: '1h' });
   res.json({ autorizado: true, token, usuario });
 });
+
 
 app.get('/verificar-autorizacao', (req: Request, res: Response) => {
   const token = req.headers.authorization;
