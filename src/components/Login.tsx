@@ -75,9 +75,7 @@ function Login() {
         </label>
         <button type='submit' disabled={loading}>{loading ? 'Processando...' : 'Login'}</button>
       </form>
-      <form onSubmit={handleCadastro}>
-        <button type='submit' disabled={loading}>{loading ? 'Processando...' : 'Cadastrar'}</button>
-      </form>
+      <button onClick={handleCadastro}>{loading ? 'Processando...' : 'Cadastrar'}</button>
     </div>
   );
 }
