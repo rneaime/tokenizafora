@@ -91,12 +91,12 @@ apiRouter.get('/veiculos', autenticar, (req: Request, res: Response) => {
 });
 
 // Rota para login
-apiRouter.get('/login', (req: Request, res: Response) => {
+app.get('/login', (req: Request, res: Response) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
 // Rota para realizar login
-apiRouter.post('/login', (req: Request, res: Response) => {
+app.post('/login', (req: Request, res: Response) => {
   const { username, password } = req.body;
   // Lógica para realizar o login aqui
   if (username === 'admin' && password === 'admin') {
@@ -112,6 +112,7 @@ apiRouter.post('/login', (req: Request, res: Response) => {
 app.use('/api', apiRouter);
 
 app.get('/favicon.ico', (req: Request, res: Response) => {
+  res.setHeader('Content-Security-Policy', "default-src 'self'; img-src 'self'; object-src 'none';");
   res.sendFile(path.join(__dirname, '../public/favicon.ico'));
 });
 
