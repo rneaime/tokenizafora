@@ -10,9 +10,9 @@ import { createServer } from 'vite';
 // Create __dirname equivalent for ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-
 const app = express();
-app.use(bodyParser.json());
+// Configure body-parser with size limit
+app.use(bodyParser.json({ limit: '10mb' }));
 app.use(cors());
 
 // Define public directory path properly for ES modules
