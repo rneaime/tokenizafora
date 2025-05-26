@@ -139,9 +139,14 @@ app.get('/main', (req: Request, res: Response) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
-// Add route for JavaScript file
+// Generic dist file handling
+app.get('/dist/*', (req: Request, res: Response) => {
+  res.sendFile(path.join(__dirname, '../dist', req.params[0]));
+});
+
+// Specific handling for main.js with content type
 app.get('/dist/main.js', (req: Request, res: Response) => {
-  res.setHeader('Content-Type', 'application/javascript');
+  res.set('Content-Type', 'application/javascript');
   res.sendFile(path.join(__dirname, '../dist/main.js'));
 });
 
