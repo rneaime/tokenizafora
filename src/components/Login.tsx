@@ -73,7 +73,7 @@ function Login() {
           Password:
           <input type='password' value={password} onChange={(e: ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)} required disabled={loading} />
         </label>
-        <button type='submit' disabled={loading}>{loading ? 'Processando...' : 'Login'}</button>
+        <button type='submit' disabled={loading}>{loading ? 'Processando...' : 'Fazer Login'}</button>
       </form>
       <button onClick={handleCadastro}>{loading ? 'Processando...' : 'Cadastrar'}</button>
     </div>
