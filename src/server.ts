@@ -42,7 +42,7 @@ app.use(vite.middlewares);
 
 // Middleware de autenticação
 const autenticar = (req: Request, res: Response, next: any) => {
-  const token = req.headers.authorization;
+  const token = req.body.token;
   if (token) {
     jsonwebtoken.verify(token, 'chave_secreta', (err, decoded) => {
       if (err) {
