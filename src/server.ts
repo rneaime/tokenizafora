@@ -23,8 +23,7 @@ app.use(express.static(distPath));
 
 // Desativa o cache
 app.use((req, res, next) => {
-  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-  res.setHeader('Expires', '-1');
+  res.setHeader('Cache-Control', 'max-age=3600');
   next();
 });
 
