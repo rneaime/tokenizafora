@@ -1,11 +1,10 @@
-import { createServer } from 'vite';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
 import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import jwt from 'jsonwebtoken';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
 // Type definitions for better type checking
 type Request = express.Request;
@@ -14,16 +13,6 @@ type NextFunction = express.NextFunction;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-
-// Start Vite in middleware mode for frontend development
-const vite = await createServer({
-  root: path.join(__dirname, '..'),
-  server: { 
-    port: 3000, // Frontend on port 3000
-    strictPort: true,
-    middlewareMode: true
-  }
-});
 
 // Create Express app for the backend API
 const app = express();

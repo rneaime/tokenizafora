@@ -40,11 +40,18 @@ export default defineConfig(({ mode }) => {
       target: 'es2018',
       // Improve chunking for better loading performance
       rollupOptions: {
+        input: {
+          main: resolve(__dirname, 'index.html'),
+        },
         output: {
           manualChunks: {
             react: ['react', 'react-dom', 'react-router-dom'],
             vendor: ['axios'],
           },
+          format: 'es',
+          entryFileNames: 'assets/[name]-[hash].js',
+          chunkFileNames: 'assets/[name]-[hash].js',
+          assetFileNames: 'assets/[name]-[hash].[ext]',
         },
       },
     },
@@ -70,7 +77,6 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           secure: false,
           ws: true,
-          rewrite: (path) => path.replace(/^\/api/, ''),
         },
       },
       // Enable CORS
