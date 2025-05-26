@@ -57,8 +57,7 @@ function App(): JSX.Element {
       } finally {
         setIsLoading(false);
       }
-    };
-    
+    };    
     checkAuthState();
   }, [token]);
 
@@ -74,83 +73,36 @@ function App(): JSX.Element {
     <ErrorBoundary fallback={<div>Algo deu errado. Por favor, recarregue a página.</div>}> 
       <BrowserRouter>
         <Suspense fallback={<div>Carregando componente...</div>}>          
-          {autorizado ? (
-            <>              
-              <nav>
-                <ul>
-                  <li>
-                    <Link to="/garantias">Garantias</Link>
-                  </li>
-                  <li>
-                    <Link to="/tokenizar">Tokenizar</Link>
-                  </li>
-                  <li>
-                    <Link to="/veiculos">Veículos</Link>
-                  </li>
-                </ul>
-              </nav>
-              <Routes>
-                <Route path="/" element={<Navigate to="/garantias" replace />} />
-                <Route 
-                  path="/garantias" 
-                  element={
-                    <ProtectedRoute isAuthorized={autorizado}>
-                      <Garantia />
-                    </ProtectedRoute>
-                  } 
-                />
-                <Route 
-                  path="/garantias/cadastro" 
-                  element={
-                    <ProtectedRoute isAuthorized={autorizado}>
-                      <CadastroGarantia />
-                    </ProtectedRoute>
-                  } 
-                />
-                <Route 
-                  path="/tokenizar" 
-                  element={
-                    <ProtectedRoute isAuthorized={autorizado}>
-                      <Tokenizer />
-                    </ProtectedRoute>
-                  } 
-                />
-                <Route 
-                  path="/tokenizar/cadastro" 
-                  element={
-                    <ProtectedRoute isAuthorized={autorizado}>
-                      <CadastroTokenizer />
-                    </ProtectedRoute>
-                  } 
-                />
-                <Route 
-                  path="/veiculos" 
-                  element={
-                    <ProtectedRoute isAuthorized={autorizado}>
-                      <Veiculo />
-                    </ProtectedRoute>
-                  } 
-                />
-                <Route 
-                  path="/veiculos/cadastro" 
-                  element={
-                    <ProtectedRoute isAuthorized={autorizado}>
-                      <CadastroVeiculo />
-                    </ProtectedRoute>
-                  } 
-                />
-              </Routes>
-            </>
-          ) : (
-            <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route path="*" element={<Navigate to="/login" replace />} />
-            </Routes>
-          )}
+          <Routes>
+            <Route path="/" element={<Navigate to="/garantias" replace />} />
+            <Route 
+              path="/garantias" 
+              element={
+                <ProtectedRoute isAuthorized={true}>
+                  <Garantia />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/tokenizar" 
+              element={
+                <ProtectedRoute isAuthorized={true}>
+                  <Tokenizer />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/veiculos" 
+              element={
+                <ProtectedRoute isAuthorized={true}>
+                  <Veiculo />
+                </ProtectedRoute>
+              } 
+            />
+            <Route path="/login" element={<Login />} />
+          </Routes>
         </Suspense>
       </BrowserRouter>
     </ErrorBoundary>
   );
 }
-
-export default App;
