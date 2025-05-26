@@ -1,3 +1,4 @@
+
 import express, { Request, Response } from 'express';
 import bodyParser from 'body-parser';
 import jsonwebtoken from 'jsonwebtoken';
@@ -5,18 +6,9 @@ import path from 'path';
 import cors from 'cors';
 
 const app = express();
-const serveStatic = require('serve-static');
 
 app.use(cors());
 app.use(bodyParser.json());
-
-app.use(serveStatic(path.join(__dirname, '../dist'), {
-  setHeaders: (res, path) => {
-    if (path.endsWith('.js')) {
-      res.setHeader('Content-Type', 'application/javascript');
-    }
-  }
-}));
 
 const autenticar = (req: Request, res: Response, next: any) => {
   const token = req.headers.authorization;
@@ -70,6 +62,18 @@ app.post('/login', (req: Request, res: Response) => {
   res.json({ autorizado: true, token, usuario });
 });
 
+app.get('/dist/:file', (req, res) => {
+  const file = req.params.file;
+  if (file.endsWith('.js')) {
+    res.setHeader('Content-Type', 'application/javascript');
+  }
+  res.sendFile(path.join(__dirname, '../dist/' + file));
+});
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../dist/index.html'));
+});
+
 app.listen(3001, () => {
-  console.log('Servidor rodando na porta 3001');
+  console.log('Servidor rodando na porta 3001');
 });
