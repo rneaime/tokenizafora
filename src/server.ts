@@ -1,3 +1,4 @@
+
 import express, { Request, Response } from 'express';
 import bodyParser from 'body-parser';
 import * as jwt from 'jsonwebtoken';
@@ -11,26 +12,25 @@ import { createServer } from 'vite';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const app = express();
-const serveStatic = require('serve-static');
 
 // Configure body-parser with size limit
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(cors());
 
+// Define public directory path properly for ES modules
+const publicPath = path.join(__dirname, '../public');
+const distPath = path.join(__dirname, '../dist');
+
 // Serve static files with proper content types
-app.use(serveStatic(path.join(__dirname, '../dist'), {
-  setHeaders: (res, path) => {
-    if (path.endsWith('.js')) {
+app.use(express.static(distPath, {
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith('.js')) {
       res.setHeader('Content-Type', 'application/javascript');
     }
   }
 }));
-
-// Define public directory path properly for ES modules
-const publicPath = path.join(__dirname, '../public');
-const distPath = path.join(__dirname, '../dist');
 app.use(express.static(publicPath));
-app.use(express.static(distPath));
+
 
 // Desativa o cache
 app.use((req, res, next) => {
@@ -134,15 +134,18 @@ app.get('/main', (req: Request, res: Response) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
-// Generic dist file handling
-app.get('/dist/*', (req: Request, res: Response) => {
-  res.sendFile(path.join(__dirname, '../dist', req.params[0]));
+// Generic dist file handling with params - this will handle all dist files including main.js
+app.get('/dist/:file', (req, res) => {
+  const file = req.params.file;
+  if (file.endsWith('.js')) {
+    res.setHeader('Content-Type', 'application/javascript');
+  }
+  res.sendFile(path.join(__dirname, '../dist/' + file));
 });
 
-// Specific handling for main.js with content type
-app.get('/dist/main.js', (req: Request, res: Response) => {
-  res.set('Content-Type', 'application/javascript');
-  res.sendFile(path.join(__dirname, '../dist/main.js'));
+// Generic dist file handling with wildcard for nested paths
+app.get('/dist/*', (req: Request, res: Response) => {
+  res.sendFile(path.join(__dirname, '../dist', req.params[0]));
 });
 
 // 404 middleware - capture API routes that don't match
