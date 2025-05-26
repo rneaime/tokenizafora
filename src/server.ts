@@ -1,27 +1,19 @@
 import express, { Request, Response } from 'express';
-import path from 'path';
 import bodyParser from 'body-parser';
-import jwt from 'jsonwebtoken';
+import jsonwebtoken from 'jsonwebtoken';
+import path from 'path';
 import cors from 'cors';
 
 const app = express();
-app.use(bodyParser.json());
+
 app.use(cors());
-app.use(express.static('public'));
+app.use(bodyParser.json());
 app.use(express.static('dist'));
 
-// Desativa o cache
-app.use((req, res, next) => {
-  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-  res.setHeader('Expires', '-1');
-  next();
-});
-
-// Middleware de autenticação
 const autenticar = (req: Request, res: Response, next: any) => {
-  const token = req.body.token;
+  const token = req.headers.authorization;
   if (token) {
-    jwt.verify(token, 'chave_secreta', (err, decoded) => {
+    jsonwebtoken.verify(token, 'chave_secreta', (err, decoded) => {
       if (err) {
         res.status(401).json({ mensagem: 'Acesso não autorizado' });
       } else {
@@ -43,14 +35,6 @@ app.get('/garantias', autenticar, (req: Request, res: Response) => {
   res.json(garantias);
 });
 
-app.post('/garantias', autenticar, (req: Request, res: Response) => {
-  // Lógica para criar garantia aqui
-  const { id, veiculo, proprietario, valorDaGarantia, statusDaGarantia } = req.body;
-  const garantia = { id, veiculo, proprietario, valorDaGarantia, statusDaGarantia };
-  console.log(garantia);
-  res.json(garantia);
-});
-
 // Rotas para tokenização
 app.post('/tokenizar', autenticar, (req: Request, res: Response) => {
   // Lógica para tokenizar veículo aqui
@@ -69,34 +53,17 @@ app.get('/veiculos', autenticar, (req: Request, res: Response) => {
   res.json(veiculos);
 });
 
-app.post('/veiculos', autenticar, (req: Request, res: Response) => {
-  // Lógica para criar veículo aqui
-  const { renavam, placa, proprietario, valorDoVeiculo } = req.body;
-  const veiculo = { renavam, placa, proprietario, valorDoVeiculo };
-  console.log(veiculo);
-  res.json(veiculo);
-});
-
 // Rotas para autorização
 app.post('/login', (req: Request, res: Response) => {
   const { username, password } = req.body;
   // Lógica para autenticar o usuário aqui
   const usuario = { username, password };
-  const token = jwt.sign(usuario, 'chave_secreta', { expiresIn: '1h' });
+  const token = jsonwebtoken.sign(usuario, 'chave_secreta', { expiresIn: '1h' });
   res.json({ autorizado: true, token, usuario });
 });
 
-app.get('/', (req: Request, res: Response) => {
-  res.sendFile(path.join(__dirname, '../index.html'));
-});
-
-app.get('/dist/*', (req: Request, res: Response) => {
-  res.sendFile(path.join(__dirname, '../dist', req.params[0]));
-});
-
-app.get('/dist/main.js', (req: Request, res: Response) => {
-  res.set('Content-Type', 'application/javascript');
-  res.sendFile(path.join(__dirname, '../dist/main.js'));
+app.get('*', (req: Request, res: Response) => {
+  res.sendFile(path.join(__dirname, '../dist/index.html'));
 });
 
 app.listen(3001, () => {
