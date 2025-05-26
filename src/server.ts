@@ -5,7 +5,6 @@ import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-import { createServer } from 'vite';
 
 // Create __dirname equivalent for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -45,17 +44,10 @@ app.use((req, res, next) => {
   next();
 });
 
-// Initialize Vite development server
-const vite = await createServer({
-  root: path.join(__dirname, '..'),
-  server: { 
-    port: 3001,
-    middlewareMode: true
-  }
+// API endpoint for frontend health check
+app.get('/api/health', (req: Request, res: Response) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
-
-// Use Vite's middleware in development mode
-app.use(vite.middlewares);
 
 // Middleware de autenticação
 const autenticar = (req: Request, res: Response, next: any) => {
@@ -74,7 +66,7 @@ const autenticar = (req: Request, res: Response, next: any) => {
 };
 
 // Rotas para garantias
-app.get('/garantias', autenticar, (req: Request, res: Response) => {
+app.get('/api/garantias', autenticar, (req: Request, res: Response) => {
   // Lógica para carregar garantias aqui
   const garantias = [
     { id: 1, veiculo: 'Veículo 1', proprietario: 'Proprietário 1', valorDaGarantia: 1000, statusDaGarantia: 'Ativa' },
@@ -84,7 +76,7 @@ app.get('/garantias', autenticar, (req: Request, res: Response) => {
 });
 
 // Rotas para tokenização
-app.post('/tokenizar', autenticar, (req: Request, res: Response) => {
+app.post('/api/tokenizar', autenticar, (req: Request, res: Response) => {
   // Lógica para tokenizar veículo aqui
   const { renavam, placa, proprietario, valorDoVeiculo } = req.body;
   const tokenizado = { renavam, placa, proprietario, valorDoVeiculo };
@@ -92,7 +84,7 @@ app.post('/tokenizar', autenticar, (req: Request, res: Response) => {
 });
 
 // Rotas para veículos
-app.get('/veiculos', autenticar, (req: Request, res: Response) => {
+app.get('/api/veiculos', autenticar, (req: Request, res: Response) => {
   // Lógica para carregar veículos aqui
   const veiculos = [
     { renavam: '1234567890', placa: 'ABC1234', proprietario: 'Proprietário 1', valorDoVeiculo: 10000 },
@@ -102,7 +94,7 @@ app.get('/veiculos', autenticar, (req: Request, res: Response) => {
 });
 
 // Rotas para autorização
-app.post('/login', (req: Request, res: Response) => {
+app.post('/api/login', (req: Request, res: Response) => {
   const { username, password } = req.body;
   // Lógica para autenticar o usuário aqui
   const usuario = { username, password };
@@ -110,7 +102,7 @@ app.post('/login', (req: Request, res: Response) => {
   res.json({ autorizado: true, token, usuario });
 });
 
-app.get('/verificar-autorizacao', (req: Request, res: Response) => {
+app.get('/api/verificar-autorizacao', (req: Request, res: Response) => {
   const token = req.headers.authorization;
   if (token) {
     jwt.verify(token, 'chave_secreta', (err, decoded) => {
@@ -125,7 +117,7 @@ app.get('/verificar-autorizacao', (req: Request, res: Response) => {
   }
 });
 
-app.post('/logout', (req: Request, res: Response) => {
+app.post('/api/logout', (req: Request, res: Response) => {
   // Lógica para desautenticar o usuário aqui
   res.json({ autorizado: false });
 });
