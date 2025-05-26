@@ -94,6 +94,7 @@ app.post('/login', (req: Request, res: Response) => {
   res.json({ autorizado: true, token, usuario });
 });
 
+<<<<<<< HEAD
 
 app.get('/verificar-autorizacao', (req: Request, res: Response) => {
   const token = req.headers.authorization;
@@ -109,6 +110,9 @@ app.get('/verificar-autorizacao', (req: Request, res: Response) => {
     res.status(401).json({ mensagem: 'Acesso não autorizado' });
   }
 });
+=======
+app.use(express.static(path.join(__dirname, '../dist')));
+>>>>>>> 0dc00cc772c68392188286dcbd01ffe004a4b902
 
 app.post('/logout', (req: Request, res: Response) => {
   // Lógica para desautenticar o usuário aqui
