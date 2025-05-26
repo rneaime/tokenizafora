@@ -9,7 +9,7 @@ app.use(bodyParser.json());
 app.use(cors());
 app.use(express.static('public'));
 app.use(express.static('dist'));
-app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.json({ limit: '50mb' }));
 
 // Desativa o cache
 app.use((req, res, next) => {
