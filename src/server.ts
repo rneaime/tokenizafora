@@ -141,6 +141,7 @@ app.get('/main', (req: Request, res: Response) => {
 
 // Add route for JavaScript file
 app.get('/dist/main.js', (req: Request, res: Response) => {
+  res.setHeader('Content-Type', 'application/javascript');
   res.sendFile(path.join(__dirname, '../dist/main.js'));
 });
 
