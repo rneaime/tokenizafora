@@ -53,9 +53,7 @@ export const useAuth = (): AuthHook => {
           'Authorization': `Bearer ${currentToken}`
         }
       });
-      
       const dados = response.data;
-      
       if (dados.autorizado) {
         setAutorizado(true);
         setUsuario(dados.usuario || null);
@@ -80,14 +78,12 @@ export const useAuth = (): AuthHook => {
     try {
       const response = await axios.post(`${API_BASE_URL}/login`, { username, password });
       const dados: AuthResponse = response.data;
-      
       if (dados.autorizado && dados.token) {
         localStorage.setItem(TOKEN_STORAGE_KEY, dados.token);
         setToken(dados.token);
         setAutorizado(true);
         setUsuario(dados.usuario || null);
       }
-      
       return dados;
     } catch (error) {
       console.error('Erro ao fazer login:', error);
