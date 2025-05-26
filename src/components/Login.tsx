@@ -1,5 +1,6 @@
 import React, { useState, FormEvent, ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth.js';
 import { verificarCredenciais, cadastrarUsuario } from '../data/usuarios';
 
 function Login() {
@@ -9,6 +10,7 @@ function Login() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
@@ -19,7 +21,12 @@ function Login() {
         throw new Error('Username e senha são obrigatórios');
       }
       if (verificarCredenciais(username, password)) {
-        navigate('/');
+        const resposta = await login(username, password);
+        if (resposta.autorizado) {
+          navigate('/');
+        } else {
+          throw new Error('Credenciais inválidas');
+        }
       } else {
         throw new Error('Credenciais inválidas');
       }
