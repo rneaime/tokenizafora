@@ -1,17 +1,35 @@
-import express, { Request, Response } from 'express';
-import bodyParser from 'body-parser';
-import * as jwt from 'jsonwebtoken';
-import cors from 'cors';
+import { createServer } from 'vite';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import express from 'express';
+import bodyParser from 'body-parser';
+import cors from 'cors';
+import jwt from 'jsonwebtoken';
 
-// Create __dirname equivalent for ES modules
+// Type definitions for better type checking
+type Request = express.Request;
+type Response = express.Response;
+type NextFunction = express.NextFunction;
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const app = express();
 
-// Configure body-parser with size limit
+// Start Vite in middleware mode for frontend development
+const vite = await createServer({
+  root: path.join(__dirname, '..'),
+  server: { 
+    port: 3000, // Frontend on port 3000
+    strictPort: true,
+    middlewareMode: true
+  }
+});
+
+// Create Express app for the backend API
+const app = express();
+const PORT = 3001; // Backend on port 3001
+
+// Configure middleware
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(cors());
 
@@ -30,15 +48,15 @@ app.use(express.static(distPath, {
 app.use(express.static(publicPath));
 
 // General middleware for content type
-app.use((req, res, next) => {
+app.use((req: Request, res: Response, next: NextFunction) => {
   if (req.url.endsWith('.js')) {
     res.setHeader('Content-Type', 'application/javascript');
   }
   next();
 });
 
-// Desativa o cache
-app.use((req, res, next) => {
+// Disable cache
+app.use((req: Request, res: Response, next: NextFunction) => {
   res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
   res.setHeader('Expires', '-1');
   next();
@@ -49,11 +67,11 @@ app.get('/api/health', (req: Request, res: Response) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// Middleware de autenticação
-const autenticar = (req: Request, res: Response, next: any) => {
+// Authentication middleware
+const autenticar = (req: Request, res: Response, next: NextFunction) => {
   const token = req.headers.authorization;
   if (token) {
-    jwt.verify(token, 'chave_secreta', (err, decoded) => {
+    jwt.verify(token, 'chave_secreta', (err: any, decoded: any) => {
       if (err) {
         res.status(401).json({ mensagem: 'Acesso não autorizado' });
       } else {
@@ -65,9 +83,9 @@ const autenticar = (req: Request, res: Response, next: any) => {
   }
 };
 
-// Rotas para garantias
+// Routes for garantias (with /api prefix)
 app.get('/api/garantias', autenticar, (req: Request, res: Response) => {
-  // Lógica para carregar garantias aqui
+  // Logic for loading garantias
   const garantias = [
     { id: 1, veiculo: 'Veículo 1', proprietario: 'Proprietário 1', valorDaGarantia: 1000, statusDaGarantia: 'Ativa' },
     { id: 2, veiculo: 'Veículo 2', proprietario: 'Proprietário 2', valorDaGarantia: 2000, statusDaGarantia: 'Inativa' },
@@ -75,17 +93,17 @@ app.get('/api/garantias', autenticar, (req: Request, res: Response) => {
   res.json(garantias);
 });
 
-// Rotas para tokenização
+// Routes for tokenization (with /api prefix)
 app.post('/api/tokenizar', autenticar, (req: Request, res: Response) => {
-  // Lógica para tokenizar veículo aqui
+  // Logic for tokenizing vehicle
   const { renavam, placa, proprietario, valorDoVeiculo } = req.body;
   const tokenizado = { renavam, placa, proprietario, valorDoVeiculo };
   res.json(tokenizado);
 });
 
-// Rotas para veículos
+// Routes for vehicles (with /api prefix)
 app.get('/api/veiculos', autenticar, (req: Request, res: Response) => {
-  // Lógica para carregar veículos aqui
+  // Logic for loading vehicles
   const veiculos = [
     { renavam: '1234567890', placa: 'ABC1234', proprietario: 'Proprietário 1', valorDoVeiculo: 10000 },
     { renavam: '2345678901', placa: 'DEF5678', proprietario: 'Proprietário 2', valorDoVeiculo: 20000 },
@@ -93,10 +111,10 @@ app.get('/api/veiculos', autenticar, (req: Request, res: Response) => {
   res.json(veiculos);
 });
 
-// Rotas para autorização
+// Routes for authorization (with /api prefix)
 app.post('/api/login', (req: Request, res: Response) => {
   const { username, password } = req.body;
-  // Lógica para autenticar o usuário aqui
+  // Logic for authenticating user
   const usuario = { username, password };
   const token = jwt.sign(usuario, 'chave_secreta', { expiresIn: '1h' });
   res.json({ autorizado: true, token, usuario });
@@ -105,7 +123,7 @@ app.post('/api/login', (req: Request, res: Response) => {
 app.get('/api/verificar-autorizacao', (req: Request, res: Response) => {
   const token = req.headers.authorization;
   if (token) {
-    jwt.verify(token, 'chave_secreta', (err, decoded) => {
+    jwt.verify(token, 'chave_secreta', (err: any, decoded: any) => {
       if (err) {
         res.status(401).json({ mensagem: 'Acesso não autorizado' });
       } else {
@@ -118,45 +136,11 @@ app.get('/api/verificar-autorizacao', (req: Request, res: Response) => {
 });
 
 app.post('/api/logout', (req: Request, res: Response) => {
-  // Lógica para desautenticar o usuário aqui
+  // Logic for logging out
   res.json({ autorizado: false });
 });
 
-// Root route
-app.get('/', (req: Request, res: Response) => {
-  res.send('Bem-vindo ao servidor!');
-});
-
-// Main route
-app.get('/main', (req: Request, res: Response) => {
-  res.sendFile(path.join(__dirname, '../public/index.html'));
-});
-
-// Generic dist file handling with params - this will handle all dist files including main.js
-app.get('/dist/:file', (req, res) => {
-  const file = req.params.file;
-  if (file.endsWith('.js')) {
-    res.setHeader('Content-Type', 'application/javascript');
-  }
-  res.sendFile(path.join(__dirname, '../dist/' + file));
-});
-
-// Generic dist file handling with wildcard for nested paths
-app.get('/dist/*', (req: Request, res: Response) => {
-  res.sendFile(path.join(__dirname, '../dist', req.params[0]));
-});
-
-// 404 middleware - capture API routes that don't match
-app.use('/api', (req, res, next) => {
-  res.status(404).json({ mensagem: 'Rota não encontrada' });
-});
-
-// Catch-all route must be last - after 404 middleware
-app.get('*', (req: Request, res: Response) => {
-  res.sendFile(path.join(__dirname, '../public/index.html'));
-});
-
-// Start Express server
-app.listen(3001, () => {
-  console.log('Servidor rodando na porta 3001');
+// Start the backend server
+app.listen(PORT, () => {
+  console.log(`Servidor rodando na porta ${PORT}`);
 });
