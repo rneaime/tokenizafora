@@ -75,6 +75,7 @@ export const useAuth = (): AuthHook => {
   };
 
   const login = async (username: string, password: string): Promise<AuthResponse> => {
+    console.log('Credenciais:', username, password);
     try {
       const response = await axios.post(`${API_BASE_URL}/login`, { username, password });
       const dados: AuthResponse = response.data;
