@@ -6,11 +6,6 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
-// Type definitions for better type checking
-type Request = express.Request;
-type Response = express.Response;
-type NextFunction = express.NextFunction;
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
@@ -21,6 +16,13 @@ const PORT = 3001; // Backend on port 3001
 // Configure middleware
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(cors());
+
+// Configure headers for caching and content types
+app.use((req, res, next) => {
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('Expires', '-1');
+  next();
+});
 
 // Define public directory path properly for ES modules
 const publicPath = path.join(__dirname, '../public');
@@ -34,33 +36,11 @@ app.use(express.static(distPath, {
     }
   }
 }));
-app.use(express.static(publicPath));
-
-// General middleware for content type
-app.use((req: Request, res: Response, next: NextFunction) => {
-  if (req.url.endsWith('.js')) {
-    res.setHeader('Content-Type', 'application/javascript');
-  }
-  next();
-});
-
-// Disable cache
-app.use((req: Request, res: Response, next: NextFunction) => {
-  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-  res.setHeader('Expires', '-1');
-  next();
-});
-
-// API endpoint for frontend health check
-app.get('/api/health', (req: Request, res: Response) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
-});
-
-// Authentication middleware
-const autenticar = (req: Request, res: Response, next: NextFunction) => {
+// Middleware de autenticação
+const autenticar = (req, res, next) => {
   const token = req.headers.authorization;
   if (token) {
-    jwt.verify(token, 'chave_secreta', (err: any, decoded: any) => {
+    jwt.verify(token, 'chave_secreta', (err, decoded) => {
       if (err) {
         res.status(401).json({ mensagem: 'Acesso não autorizado' });
       } else {
@@ -72,9 +52,12 @@ const autenticar = (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-// Routes for garantias (with /api prefix)
-app.get('/api/garantias', autenticar, (req: Request, res: Response) => {
-  // Logic for loading garantias
+// API Routes - All API routes have /api prefix
+const apiRouter = express.Router();
+
+// Rotas para garantias
+apiRouter.get('/garantias', autenticar, (req, res) => {
+  // Lógica para carregar garantias aqui
   const garantias = [
     { id: 1, veiculo: 'Veículo 1', proprietario: 'Proprietário 1', valorDaGarantia: 1000, statusDaGarantia: 'Ativa' },
     { id: 2, veiculo: 'Veículo 2', proprietario: 'Proprietário 2', valorDaGarantia: 2000, statusDaGarantia: 'Inativa' },
@@ -82,17 +65,17 @@ app.get('/api/garantias', autenticar, (req: Request, res: Response) => {
   res.json(garantias);
 });
 
-// Routes for tokenization (with /api prefix)
-app.post('/api/tokenizar', autenticar, (req: Request, res: Response) => {
-  // Logic for tokenizing vehicle
+// Rotas para tokenização
+apiRouter.post('/tokenizar', autenticar, (req, res) => {
+  // Lógica para tokenizar veículo aqui
   const { renavam, placa, proprietario, valorDoVeiculo } = req.body;
   const tokenizado = { renavam, placa, proprietario, valorDoVeiculo };
   res.json(tokenizado);
 });
 
-// Routes for vehicles (with /api prefix)
-app.get('/api/veiculos', autenticar, (req: Request, res: Response) => {
-  // Logic for loading vehicles
+// Rotas para veículos
+apiRouter.get('/veiculos', autenticar, (req, res) => {
+  // Lógica para carregar veículos aqui
   const veiculos = [
     { renavam: '1234567890', placa: 'ABC1234', proprietario: 'Proprietário 1', valorDoVeiculo: 10000 },
     { renavam: '2345678901', placa: 'DEF5678', proprietario: 'Proprietário 2', valorDoVeiculo: 20000 },
@@ -100,19 +83,19 @@ app.get('/api/veiculos', autenticar, (req: Request, res: Response) => {
   res.json(veiculos);
 });
 
-// Routes for authorization (with /api prefix)
-app.post('/api/login', (req: Request, res: Response) => {
+// Rotas para autorização
+apiRouter.post('/login', (req, res) => {
   const { username, password } = req.body;
-  // Logic for authenticating user
+  // Lógica para autenticar o usuário aqui
   const usuario = { username, password };
   const token = jwt.sign(usuario, 'chave_secreta', { expiresIn: '1h' });
   res.json({ autorizado: true, token, usuario });
 });
 
-app.get('/api/verificar-autorizacao', (req: Request, res: Response) => {
+apiRouter.get('/verificar-autorizacao', (req, res) => {
   const token = req.headers.authorization;
   if (token) {
-    jwt.verify(token, 'chave_secreta', (err: any, decoded: any) => {
+    jwt.verify(token, 'chave_secreta', (err, decoded) => {
       if (err) {
         res.status(401).json({ mensagem: 'Acesso não autorizado' });
       } else {
@@ -124,12 +107,29 @@ app.get('/api/verificar-autorizacao', (req: Request, res: Response) => {
   }
 });
 
-app.post('/api/logout', (req: Request, res: Response) => {
-  // Logic for logging out
+apiRouter.post('/logout', (req, res) => {
+  // Lógica para desautenticar o usuário aqui
   res.json({ autorizado: false });
 });
 
-// Start the backend server
+// Mount API router with /api prefix
+app.use('/api', apiRouter);
+
+// Error handler middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ 
+    error: 'Internal Server Error', 
+    message: err.message 
+  });
+});
+
+// For any other request, serve the frontend app
+app.get('*', (req, res) => {
+  res.sendFile(path.join(distPath, 'index.html'));
+});
+
+// Start the server
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
