@@ -9,6 +9,8 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
+app.use(express.static(path.join(__dirname, '../dist')));
+
 app.use((req, res, next) => {
   if (req.url.endsWith('.js')) {
     res.setHeader('Content-Type', 'application/javascript');
@@ -68,12 +70,10 @@ app.post('/login', (req: Request, res: Response) => {
   res.json({ autorizado: true, token, usuario });
 });
 
-app.use(express.static(path.join(__dirname, '../dist')));
-
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../dist/index.html'));
 });
 
 app.listen(3001, () => {
-  console.log('Servidor rodando na porta 3001');
+  console.log('Servidor rodando na porta 3001');
 });
