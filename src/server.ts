@@ -1,4 +1,3 @@
-
 import express, { Request, Response } from 'express';
 import bodyParser from 'body-parser';
 import * as jwt from 'jsonwebtoken';
@@ -31,6 +30,13 @@ app.use(express.static(distPath, {
 }));
 app.use(express.static(publicPath));
 
+// General middleware for content type
+app.use((req, res, next) => {
+  if (req.url.endsWith('.js')) {
+    res.setHeader('Content-Type', 'application/javascript');
+  }
+  next();
+});
 
 // Desativa o cache
 app.use((req, res, next) => {
