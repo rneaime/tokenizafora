@@ -111,6 +111,10 @@ apiRouter.post('/login', (req: Request, res: Response) => {
 
 app.use('/api', apiRouter);
 
+app.get('/favicon.ico', (req: Request, res: Response) => {
+  res.sendFile(path.join(__dirname, '../public/favicon.ico'));
+});
+
 app.listen(PORT, () => {
   console.log(`Servidor iniciado na porta ${PORT}`);
 });
