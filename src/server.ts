@@ -1,4 +1,4 @@
-import express, { Request, Response, NextFunction } from 'express';
+import express, { Request, Response, NextFunction, Router } from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import jwt from 'jsonwebtoken';
@@ -36,7 +36,6 @@ app.use(express.static(distPath, {
     }
   }
 }));
-
 // Interface for JWT payload
 interface JWTPayload {
   username: string;
@@ -60,15 +59,21 @@ const autenticar = (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
+// API Routes - All API routes have /api prefix
+const apiRouter: Router = express.Router();
+
 // Rotas para garantias
-app.get('/garantias', autenticar, (req: Request, res: Response) => {
+apiRouter.get('/garantias', autenticar, (req: Request, res: Response) => {
   // Lógica para carregar garantias aqui
-  const garantias = [];
+  const garantias = [
+    { id: 1, veiculo: 'Veículo 1', proprietario: 'Proprietário 1', valorDaGarantia: 1000, statusDaGarantia: 'Ativa' },
+    { id: 2, veiculo: 'Veículo 2', proprietario: 'Proprietário 2', valorDaGarantia: 2000, statusDaGarantia: 'Inativa' },
+  ];
   res.json(garantias);
 });
 
 // Rotas para tokenização
-app.post('/tokenizar', autenticar, (req: Request, res: Response) => {
+apiRouter.post('/tokenizar', autenticar, (req: Request, res: Response) => {
   // Lógica para tokenizar veículo aqui
   const { renavam, placa, proprietario, valorDoVeiculo } = req.body;
   const tokenizado = { renavam, placa, proprietario, valorDoVeiculo };
@@ -76,27 +81,69 @@ app.post('/tokenizar', autenticar, (req: Request, res: Response) => {
 });
 
 // Rotas para veículos
-app.get('/veiculos', autenticar, (req: Request, res: Response) => {
+apiRouter.get('/veiculos', autenticar, (req: Request, res: Response) => {
   // Lógica para carregar veículos aqui
-  const veiculos = [];
+  const veiculos = [
+    { renavam: '1234567890', placa: 'ABC1234', proprietario: 'Proprietário 1', valorDoVeiculo: 10000 },
+    { renavam: '2345678901', placa: 'DEF5678', proprietario: 'Proprietário 2', valorDoVeiculo: 20000 },
+  ];
   res.json(veiculos);
 });
 
-app.post('/login', (req: Request, res: Response) => {
+// Rotas para autorização
+apiRouter.post('/login', (req: Request, res: Response) => {
   const { username, password } = req.body;
-  // Verificar se as credenciais são válidas
-  if (verificarCredenciais(username, password)) {
-    // Gerar um token JWT
-    const payload: JWTPayload = { username, password };
-    const token = jwt.sign(payload, 'chave_secreta', {
-      expiresIn: '1h',
-    });
-    res.json({ token });
+  // Lógica para autenticar o usuário aqui
+  if (username === 'admin' && password === 'admin') {
+    const usuario: JWTPayload = { username, password };
+    const token = jwt.sign(usuario, 'chave_secreta', { expiresIn: '1h' });
+    res.json({ autorizado: true, token, usuario });
   } else {
-    res.status(401).json({ mensagem: 'Credenciais inválidas' });
+    res.status(401).json({ mensagem: 'Usuário ou senha inválidos' });
   }
 });
 
+apiRouter.get('/verificar-autorizacao', (req: Request, res: Response) => {
+  const token = req.headers.authorization;
+  if (token) {
+    jwt.verify(token, 'chave_secreta', (err: jwt.VerifyErrors | null, decoded: any) => {
+      if (err) {
+        res.status(401).json({ mensagem: 'Acesso não autorizado' });
+      } else {
+        res.json({ autorizado: true, usuario: decoded });
+      }
+    });
+  } else {
+    res.status(401).json({ mensagem: 'Acesso não autorizado' });
+  }
+});
+
+apiRouter.post('/logout', (req: Request, res: Response) => {
+  // Lógica para desautenticar o usuário aqui
+  res.json({ autorizado: false });
+});
+
+// Mount API router with /api prefix
+app.use('/api', apiRouter);
+
+// Error handler middleware
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  console.error(err.stack);
+  res.status(500).json({ 
+    error: 'Internal Server Error', 
+    message: err.message 
+  });
+});
+
+// Handle OPTIONS requests for CORS preflight
+app.options('/*', cors());
+
+// For any other request, serve the frontend app
+app.get('/*', (req: Request, res: Response) => {
+  res.sendFile(path.join(distPath, 'index.html'));
+});
+
+// Start the server
 app.listen(PORT, () => {
-  console.log(`Servidor rodando em http://localhost:${PORT}`);
+  console.log(`Servidor rodando na porta ${PORT}`);
 });
