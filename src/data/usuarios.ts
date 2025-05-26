@@ -11,4 +11,4 @@ export const cadastrarUsuario = (usuario: Usuario) => {
 
 export const verificarCredenciais = (username: string, password: string) => {
   return usuarios.some((usuario) => usuario.username === username && usuario.password === password);
-};
+}
