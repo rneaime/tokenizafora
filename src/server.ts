@@ -1,4 +1,3 @@
-
 import express, { Request, Response } from 'express';
 import bodyParser from 'body-parser';
 import jsonwebtoken from 'jsonwebtoken';
@@ -9,6 +8,13 @@ const app = express();
 
 app.use(cors());
 app.use(bodyParser.json());
+
+app.use((req, res, next) => {
+  if (req.url.endsWith('.js')) {
+    res.setHeader('Content-Type', 'application/javascript');
+  }
+  next();
+});
 
 const autenticar = (req: Request, res: Response, next: any) => {
   const token = req.headers.authorization;
@@ -62,13 +68,7 @@ app.post('/login', (req: Request, res: Response) => {
   res.json({ autorizado: true, token, usuario });
 });
 
-app.get('/dist/:file', (req, res) => {
-  const file = req.params.file;
-  if (file.endsWith('.js')) {
-    res.setHeader('Content-Type', 'application/javascript');
-  }
-  res.sendFile(path.join(__dirname, '../dist/' + file));
-});
+app.use(express.static(path.join(__dirname, '../dist')));
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../dist/index.html'));
